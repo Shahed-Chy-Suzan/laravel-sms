@@ -22,7 +22,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::prefix('v1')->group(function(){
     Route::post('/login',[AuthController::class,'login']);
-    // Route::post('/register',[AuthController::class,'register']);
+    Route::post('/register',[AuthController::class,'register']);
 
     Route::get('/login',function(){   //middleware('auth:api') mane authenticated route na pele ei route e eshe auto hit krbe
         return response()->json([
