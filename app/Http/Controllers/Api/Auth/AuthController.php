@@ -34,8 +34,9 @@ class AuthController extends Controller
 
             return response()->json($data,200);
         }else {
+            $data['loginError'] = 'Email or Password Incorrect';
              return response()->json([
-                 'loginFailed' => 'Email or Password Incorrect'
+                 'errors' => $data
              ],401);
         }
 

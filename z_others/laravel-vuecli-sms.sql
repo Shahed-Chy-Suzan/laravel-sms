@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 16, 2022 at 06:40 AM
+-- Generation Time: Feb 16, 2022 at 05:58 AM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.2
 
@@ -86,12 +86,8 @@ CREATE TABLE `oauth_access_tokens` (
 --
 
 INSERT INTO `oauth_access_tokens` (`id`, `user_id`, `client_id`, `name`, `scopes`, `revoked`, `created_at`, `updated_at`, `expires_at`) VALUES
-('2f7ffe9e3488f7f10941f4c0c3ac2f4a610dca607d9aabd90431c9cc79b9354cd37c1c34b99c1481', 1, 3, 'userToken', '[]', 0, '2022-02-15 23:23:33', '2022-02-15 23:23:33', '2023-02-16 05:23:33'),
-('36e5642458a1c7aaeac1abcaece5b35169c43377744fb607eb1fd08394a6299bc51d034e654bd78f', 1, 3, 'userToken', '[]', 0, '2022-02-15 23:21:39', '2022-02-15 23:21:39', '2023-02-16 05:21:39'),
-('49d87d64228d2cc60356050c8740aafe625313a61adfd6f752351cc5f31e61cf82c8fdddb049ee38', 3, 3, 'userToken', '[]', 0, '2022-02-15 23:27:01', '2022-02-15 23:27:01', '2023-02-16 05:27:01'),
 ('7f35dc276ccd41c9fdcc3cbe2365fe53c6371e8bb72de53b055c3f93a0881f215240cfe07f44c9e3', 1, 3, 'userToken', '[]', 0, '2022-02-15 15:40:52', '2022-02-15 15:40:52', '2023-02-15 21:40:52'),
-('bbceed851233bf715ac38fdea3ec831d799a051ba46da039979028e235c99e25a000a880ebbcb4c3', 1, 3, 'userToken', '[]', 0, '2022-02-15 15:25:28', '2022-02-15 15:25:28', '2023-02-15 21:25:28'),
-('e21cb2e071abb72c23356ea05b5923a388ae5ffd91a5881d31b857060f442aefbd8414365ae931b2', 1, 3, 'userToken', '[]', 0, '2022-02-15 23:14:49', '2022-02-15 23:14:49', '2023-02-16 05:14:49');
+('bbceed851233bf715ac38fdea3ec831d799a051ba46da039979028e235c99e25a000a880ebbcb4c3', 1, 3, 'userToken', '[]', 0, '2022-02-15 15:25:28', '2022-02-15 15:25:28', '2023-02-15 21:25:28');
 
 -- --------------------------------------------------------
 
@@ -209,8 +205,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `image`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
 (1, 'user', 'user@gmail.com', '01700000000', NULL, NULL, '$2y$10$fyzvHDa/IDlMVtooc6B5euSGfAU65AAdd79mXO4bekxflB.IuEfka', NULL, NULL, NULL),
-(2, 'admin', 'admin@gmail.com', '01800000000', NULL, NULL, '$2y$10$swdaXIzbHWNxwqCUHgEZtOrM2dcsx1xOvm7RkggixhNIoJVP6nskW', NULL, NULL, NULL),
-(3, 'Suzan', 'suzan@gmail.com', '01811111111', NULL, NULL, '$2y$10$xiuh5HtDHiSbGFAjUvPmaOZ/V32O6S9E7w4R3U9Bm9ukOCzwsmDI.', NULL, '2022-02-15 23:27:01', '2022-02-15 23:27:01');
+(2, 'admin', 'admin@gmail.com', '01800000000', NULL, NULL, '$2y$10$swdaXIzbHWNxwqCUHgEZtOrM2dcsx1xOvm7RkggixhNIoJVP6nskW', NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -309,7 +304,7 @@ ALTER TABLE `oauth_personal_access_clients`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
