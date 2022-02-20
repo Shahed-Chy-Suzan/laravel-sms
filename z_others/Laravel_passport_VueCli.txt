@@ -12,7 +12,7 @@
 
 //----------------------------------------- Serial(Breadcum) ----------------------------------------------------
 //======================================================================================================================
-		## ---->  ----> The End
+		## ----> some info about composer ----> Start Project ----> Laravel Part ----> #1 Laravel Passport & Vue3 Project installation ----> #2 Laravel passport api user login with postman ----> #3 Laravel passport api user registration with postman ----> #4 Laravel passport api user logout ----> VueCli Part ----> #5 Vuejs admin dashboard setup ----> #6 Vuejs admin login & register component setup ----> #7 Vuejs | admin login -- #8 Vuejs | Vuex Data Save Permanently ----> #9 Vuejs | Display Validation Errors ----> #10 Vuejs | Admin Logout ----> #11 Vuejs | Admin Registration ----> #12 Vuejs | Route Secure ----> #13 Vuejs | Forgot Password part-1 ----> The End
 //======================================================================================================================
 
 
