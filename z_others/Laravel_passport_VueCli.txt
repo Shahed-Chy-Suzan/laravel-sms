@@ -1,0 +1,3672 @@
+
+//======================================================================================================
+
+					******	Project Name :  Laravel_Passport_VueCli (school management systam)	*******
+										-- From	 	 : W3 Coders
+										-- Laravel(8) with Vue_Cli(3) separate file
+						
+//======================================================================================================
+
+
+
+
+//----------------------------------------- Serial(Breadcum) ----------------------------------------------------
+//======================================================================================================================
+		## ---->  ----> The End
+//======================================================================================================================
+
+
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				//-------------- Resources of Owner --------------
+						-- YouTube_playlist : https://www.youtube.com/playlist?list=PLdXl97NMhlXnliR4D8zUJdKpCnCyuWHkS
+						-- GitHub_Repo:
+									-- Backend Api: https://github.com/sarjid/student-management-api
+									-- Frontend: https://github.com/sarjid/vue3-student-management	
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+								//---------- My_GitHub_repo ----------//
+					-- laravel-sms(Backend Api): https://github.com/Shahed-Chy-Suzan/laravel-sms
+					-- VueCli-sms(Frontend): https://github.com/Shahed-Chy-Suzan/vuecli-sms
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+			//------------------------ Project Credential ------------------------
+						-- Laravel Project run korar jonno url holo('php artisan serve' command diye):  " http://127.0.0.1:8000 "
+									-- Url: http://127.0.0.1:8000/
+									-- email: user@gmail.com
+									-- password: user									
+									-- email: admin@gmail.com
+									-- password: admin									
+									-- email: suzan@gmail.com
+									-- password: suzan
+									
+						-- VueCli project run korar jonno url holo('npm run serve' command diye):  " http://localhost:8080 "
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+			//================ some info about composer ===================//
+					  -- for upgradting composer: composer self-update
+					  -- for dowgrading to previous version of composer: composer self-update --rollback
+					  -- for making fast composer: composer config --global repos.packagist composer https://packagist.org
+								-- https://github.com/composer/composer/issues/7101
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+//=======================================================================================================================
+											//------------------ Start Project ------------------//
+//=======================================================================================================================
+
+		//------------------------------------------------- #1 Laravel Passport & Vue3 Project installation ------------------------------------------//
+		
+			-- at first amra ekta Laravel & ekta Vue_Cli project install korbo.
+			
+			//-------------------------- for Laravel(v8) -----------------------------//
+				--Documentation: https://laravel.com/docs/8.x
+				-- 1 --install laravel-8 command : composer create-project laravel/laravel:^8.0 laravel-sms	
+					
+			//------------------------- for Vue_Cli ----------------------------------//
+				--Documentation: https://cli.vuejs.org/guide/
+				--Installation: https://cli.vuejs.org/guide/installation.html
+						-- 1 --install Vue_Cli globally : npm install -g @vue/cli  //--OR--// Upgrade: npm update -g @vue/cli
+									-- vue_cli install hoye gele amra jodi cmd te "vue" ei command ta dei taile amra vue er command sob dekte pabo.
+						-- 2 --install Vue_Cli project : 
+											-- command: vue create vuecli-sms
+											-- select: manually select features
+											-- select: amra ekhane 'Router', 'Vuex' select kore(space button click kore) Enter dibo.
+															? Please pick a preset: Manually select features
+															? Check the features needed for your project:
+															 (*) Choose Vue version
+															 (*) Babel
+															 ( ) TypeScript
+															 ( ) Progressive Web App (PWA) Support
+															 (*) Router
+															>(*) Vuex
+															 ( ) CSS Pre-processors
+															 (*) Linter / Formatter
+															 ( ) Unit Testing
+															 ( ) E2E Testing
+														-- amra ekhane PC er arrow button diye up-down kori cursor, & "space" button click kore select kori, last e enter hit kori.
+											-- select: vue version 3*x
+											-- select: history mode e 'y' diye enter dibo.
+											-- select: baki ja option asbe sob Enter click kore pass kore chole jabo.
+		
+		
+		
+		
+//--------------------------------------------------- .ENV -------------------------------------------------------------------------------------------
+				 DB_DATABASE= laravel-vuecli-sms
+				 
+
+
+
+
+
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+														//------------------- Laravel Part -----------------------//
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+//=======================================================================================================================
+											//----------------------- Authentication (Laravel Passport) -----------------//
+											//------------ #1 Laravel Passport & Vue3 Project installation -----------------//
+//=======================================================================================================================
+//------------------------------------------------- Authentication ----------------------------------------------------------------------------------
+			-- ekhane amra authentication er jonno Laravel-Passport use korbo, Link: ( https://laravel.com/docs/8.x/passport ) ,
+	
+			//--Laravel-Passport installation documentation in Laravel_Doc: https://laravel.com/docs/8.x/passport#installation
+						//--1-- command: composer require laravel/passport
+						//--2-- command: php artisan migrate		//migrate korar aghe amra amader 'User' table ta edit korbo, 2ta field extra add korbo.
+						//--3-- command: php artisan passport:install
+						
+			//-- 
+			
+			
+			//---------------------------------------------- database/migratios/user_table --------------------------------------------------------------------------------------
+								Schema::create('users', function (Blueprint $table) {
+									$table->id();
+									$table->string('name');
+									$table->string('email')->unique();
+									$table->string('phone')->unique();
+									$table->string('image')->nullable();
+									$table->timestamp('email_verified_at')->nullable();
+									$table->string('password');
+									$table->rememberToken();
+									$table->timestamps();
+								});
+			
+			//---------------------------------------------- Model/User.php --------------------------------------------------------------------------------------
+							protected $fillable = [
+								'name', 'email', 'phone', 'image', 'password',
+							];
+						
+			-- apply command: php artisan migrate
+			-- apply command: php artisan passport:install
+			
+			
+			//---------------------------------------------- Model/User.php ----------------------------------------------------------------------------------------------------
+							use Laravel\Passport\HasApiTokens;
+							
+							use HasFactory, Notifiable, HasApiTokens;
+							
+							
+			//---------------------------------------------- App\Providers\AuthServiceProvider ---------------------------------------------------------------------------
+							use Laravel\Passport\Passport;
+							
+							public function boot()
+							{
+								$this->registerPolicies();
+
+								if (! $this->app->routesAreCached()) {
+									Passport::routes();
+								}
+							}
+							
+			//---------------------------------------------- config/auth.php -----------------------------------------------------------------------------------------------
+							'guards' => [
+								'web' => [
+									'driver' => 'session',
+									'provider' => 'users',
+								],
+
+								'api' => [
+									'driver' => 'passport',				//--------------------------------------
+									'provider' => 'users',
+									'hash' => false,
+								],
+							],
+			
+			
+							
+							
+//=================================================================================================================
+																//------------- #2 Laravel passport api user login with postman  -------------//
+//=================================================================================================================
+			
+			-- making Controller: php artisan make:controller Api/Auth/AuthController
+			-- making Controller: php artisan make:controller Api/Auth/ForgotPasswordController
+			
+			//------------------------------- making seeder ----------------------------------------------------------------------------------------------------
+						-- command: php artisan make:seeder UsersTableSeeder
+						
+			//--------------------------------------------- database/seeders/UsersTableSeeder.php ---------------------------------------------------------------------
+						<?php
+
+						namespace Database\Seeders;
+
+						use Illuminate\Database\Seeder;
+						use App\Models\User;													//-----------------------------
+						use Illuminate\Support\Facades\Hash;					//-----------------------------
+
+						class UsersTableSeeder extends Seeder
+						{
+							/**
+							 * Run the database seeds.
+							 *
+							 * @return void
+							 */
+							public function run()
+							{
+								User::insert([									//-----------------------------
+									[
+									 'name' => 'user',
+									 'email' => 'user@gmail.com',
+									 'phone' => '01700000000',
+									 'password' => Hash::make('user'),
+									],
+
+									[
+									 'name' => 'admin',
+									 'email' => 'admin@gmail.com',
+									 'phone' => '01800000000',
+									 'password' => Hash::make('admin'),
+									]
+								 ]);
+							}
+						}
+						
+						
+			//--------------------------------------------- database/seeders/DatabaseTableSeeder.php ---------------------------------------------------------------------
+							public function run()
+							{
+									// User::factory(10)->create();
+
+									$this->call(UsersTableSeeder::class);						//------------------------------------
+							}
+
+				-- command: php artisan db:seed
+
+
+
+			//--------------------------------------------- routes/api.php ----------------------------------------------------------------------------------------------------
+							use App\Http\Controllers\Api\Auth\AuthController;
+			
+							Route::prefix('v1')->group(function(){
+								Route::post('/login',[AuthController::class,'login']);
+								// Route::post('/register',[AuthController::class,'register']);
+
+							Route::get('/login',function(){   //middleware('auth:api') mane authenticated route na pele ei route e eshe auto hit krbe
+								return response()->json([
+									'message' => 'Unauthenticated',
+								],401);
+							})->name('login');
+
+								Route::middleware('auth:api')->group(function(){             //ekhane ei route gula access korte Login thaka lagbe.
+									Route::post('/logout',[AuthController::class,'logout']);
+								});
+							});
+
+
+
+			//--------------------------------------------- controller/api/Auth/AuthController.php -----------------------------------------------------------------------------------
+							<?php
+
+								namespace App\Http\Controllers\Api\Auth;
+
+								use App\Http\Controllers\Controller;
+								use Illuminate\Http\Request;
+								use App\Models\User;
+								use Illuminate\Support\Facades\Auth;
+								use Illuminate\Support\Facades\Hash;
+								use Illuminate\Support\Facades\Validator;
+
+								class AuthController extends Controller
+								{
+									public function login(Request $request){
+										$validate = Validator::make($request->all(),[
+											 'email' => 'required|email|exists:users',
+											 'password' => 'required'
+										]);
+
+										if ($validate->fails()) {
+											return response()->json([
+												'errors' => $validate->errors()
+											],422);
+										}
+
+										$reqData = request()->only('email','password');
+										if (Auth::attempt($reqData)) {
+											$user = Auth::user();
+											 $data['token_type'] = 'Bearer';
+											 $data['access_token'] = $user->createToken('userToken')->accessToken;
+											 $data['user'] = $user;
+
+											return response()->json($data,200);
+										}else {
+											$data['loginError'] = 'Email or Password Incorrect';
+											 return response()->json([
+												 'errors' => $data
+											 ],401);
+										}
+
+									 }
+								}
+
+			
+			//--------------------------------------------- POSTMAN ----------------------------------------------------------------------------------------------------
+					--Now >> POSTMAN >> POST (method) >> URL (http://127.0.0.1:8000/api/v1/login) >> Headers & Body te info gula dibo:
+							
+							-"Headers" -->> Headers e 'KEY' & "VALUE" name e 2ta column deya thakbe, okhan amader k key & vlaue dithe hbe 2ta row te, ta holo: 
+										1st row te 'Key' te dibo 'Accept' R 'VALUE' te dibo 'appication/json'
+										2nd row te 'Key' te dibo 'Content-Type' R 'VALUE' te dibo 'appication/json'
+							
+							- "Headers" tab e ei info gula na dileo chole deklam POSTMAN software use korle, ei info gula 'Headers' tab e deya lage postman er crome extension use krle.
+							
+							-"Body" -->> erpor Body tab e eshe ekta nav er motho dekbo, jekhane amara "x-www-form-urlencoded" option tai check_mark kore dibo, then abar ager motho niche "key" & "value" deyar option dekte pabo, But ekhane "KEY" te dithe hobe table er column name, &  "VLAUE" te dithe hobe oi column tai ki value chilo ota, For Example:
+
+										'Key' te dibo 'email' R 'VALUE' te dibo 'user@gmail.com'
+										'Key' te dibo 'password' R 'VALUE' te dibo 'user'
+														
+					//--Output:{
+									{
+										"token_type": "Bearer",
+										"access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiYmJjZWVkODUxMjMzYmY3MTVhYzM4ZmRlYTNlYzgzMWQ3OTlhMDUxYmE0NmRhMDM5OTc5MDI4ZTIzNWM5OWUyNWEwMDBhODgwZWJiY2I0YzMiLCJpYXQiOjE2NDQ5NjAzMjguNjI2NTE2LCJuYmYiOjE2NDQ5NjAzMjguNjI2NTM0LCJleHAiOjE2NzY0OTYzMjguMzY3NDk3LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.D-REwcDfW-Ic5xDIdN1E-d7d4CMAwiZRJUgp-HekVP3EPr64vZFWnHSyknzjtbkbHN9IS-dzVBAZVGBHFobLYIwHptdmWPcOQzlYy2zQVsq7SnLkvpJhOil5D9dns_E78dIlzsnadf98w4j_bR3PE3J7TWiDPEQbqmlLVYEof4YV_yWoHpXId49HqA5DwHtSt3P4GIYFUcW5VOTpjKC4WvF37txC9b-mBnWq1P5w_w7kKa6BwGi5OnK5jILF4JlEC_o67F9BdsvA0cWPRokgzbl-tTjbNsaDTYNcz8U7kH9eMW7mLm5YQw34ce_09Gw2Lwam7y7AiEEx-efm1d3gugJ7SKPGCJEcd3-L7XnC7L335505fcAg3mBL0qlUQbA9jCwC8V4qJzM25WGB6V2U0ciYA7FhacsZfNDK5eHeEz0PD6OhTNl2IqtXLbPNQM4s97g2yHud6S6NlsFSiTUmzwO2RCyvricVZDYBbywIh0HBhNFzetQRzO9dJR1wtLhwmqFObrzSkIXPgyOHpibNulviBSi4PTLnftCEXWp-JO6muQnLj29zfQBbilwZbvuM1d4J_vynjsCOolzAuXuesxVETEX-g0hG9xLwkiOR0YbGBMNecf-Z2Q4WMyVznI1vryzW6FLWbxGG3hOXDRtzFOLGjrjESS0IPQMNqryKryo",
+										"user": {
+											"id": 1,
+											"name": "user",
+											"email": "user@gmail.com",
+											"phone": "01700000000",
+											"image": null,
+											"email_verified_at": null,
+											"created_at": null,
+											"updated_at": null
+										}
+									}
+								
+					--Tar mane amra ekhane login kore pelechi(jeheto access token peyechi), 
+					
+					-- Token use: 
+								//-------(3)--------
+								"Authentication" tab e giye Dropdown theke 'Bearer Toker' select korle er danpashe ekta box asbe token deyar jonno, okhane token ta ene paste kore dibo.
+									
+									
+									
+									
+
+//=================================================================================================================
+												//------------- #3 Laravel passport api user registration with postman  -------------//
+//=================================================================================================================
+
+		//--------------------------------------------- api.php --------------------------------------------------------------------------------------------
+						Route::prefix('v1')->group(function(){
+								Route::post('/login',[AuthController::class,'login']);
+								Route::post('/register',[AuthController::class,'register']);					//---------------------------
+
+								Route::get('/login',function(){   //middleware('auth:api') mane authenticated route na pele ei route e eshe auto hit krbe
+									return response()->json([
+										'message' => 'Unauthenticated',
+									],401);
+								})->name('login');
+
+								Route::middleware('auth:api')->group(function(){             //ekhane ei route gula access korte Login thaka lagbe.
+									Route::post('/logout',[AuthController::class,'logout']);
+								});
+						});
+						
+						
+			//--------------------------------------------- controller/api/Auth/AuthController.php -------------------------------------------------------------------------
+								public function register(Request $request){
+									$validate = Validator::make($request->all(),[
+										'name' => 'required|min:4',
+										'phone' => 'required|max:14|unique:users',
+										'email' => 'required|email|unique:users',
+										'password' => 'required|min:4|confirmed'
+									]);
+
+									if ($validate->fails()) {
+										return response()->json([
+											'errors' => $validate->errors()
+										],422);
+									}
+
+									$reqData = request()->only('name','phone','email','password');
+									$reqData['password'] = Hash::make($request->password);
+										$user = User::create($reqData);
+										Auth::login($user);
+										$data['token_type'] = 'Bearer';
+										$data['access_token'] = $user->createToken('userToken')->accessToken;
+										$data['user'] = $user;
+										return response()->json($data,200);
+								}
+								
+			//--------------------------------------------- POSTMAN --------------------------------------------------------------------------------------------
+					--Now >> POSTMAN >> POST (method) >> URL (http://127.0.0.1:8000/api/v1/register) >> Headers & Body te info gula dibo:
+												
+					-"Body" -->> erpor Body tab e eshe ekta nav er motho dekbo, jekhane amara "x-www-form-urlencoded" option tai check_mark kore dibo, then abar ager motho niche "key" & "value" deyar option dekte pabo, But ekhane "KEY" te dithe hobe table er column name, &  "VLAUE" te dithe hobe oi column tai ki value chilo ota, For Example:
+
+										'Key' te dibo 'name' R 'VALUE' te dibo 'Suzan'
+										'Key' te dibo 'phone' R 'VALUE' te dibo '01811111111'
+										'Key' te dibo 'email' R 'VALUE' te dibo 'suzan@gmail.com'
+										'Key' te dibo 'password' R 'VALUE' te dibo 'suzan'
+										'Key' te dibo 'password_confirmation' R 'VALUE' te dibo 'suzan'
+														
+					//--Output:{
+									{
+										"token_type": "Bearer",
+										"access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiNDlkODdkNjQyMjhkMmNjNjAzNTYwNTBjODc0MGFhZmU2MjUzMTNhNjFhZGZkNmY3NTIzNTFjYzVmMzFlNjFjZjgyYzhmZGRkYjA0OWVlMzgiLCJpYXQiOjE2NDQ5ODkyMjEuODE4NTc1LCJuYmYiOjE2NDQ5ODkyMjEuODE4NTc4LCJleHAiOjE2NzY1MjUyMjEuNzY1ODc4LCJzdWIiOiIzIiwic2NvcGVzIjpbXX0.IXxDSQAKaE2yIGqCCjQoZvZjilcERmYNoEom7qVCv0O4ZfD3XTn9PivIo32ithrzx6TCP3Q2zj2jAehIhDNarZ4yYfdMrFNQ2moepEy3LCRAIWr-QKk8A_JRBFjPttOjhvs1DS2PWXPNUZlbOz_1ZkNiiGIcbmy2qKY2iYUAr9unKWvcekIa-KoPTY5YgMikLC94GutnHCNzN26iQJFDP7A6h8q8o66sIWCGB20gAhuUr3xA_W53kB6ETbdiQQn_QJhGKTjXPorP5gLvHjrYzDF95JkLw6Ih6LSrps3nD4nx-KlG0YgCDif7Zz--Fn94BVhiRyp7oCviqk0BcO58FTP0rOId4FDzf363XKzgQDM4NEohAqab2KKwcYwShR0e_qZYsOGRebIg7uXx39gCV_QL41Ul8Qc923wzPELketw6HCyfGLDdKgHxOn8_6hust19EPMSmD4WdqagMRolPjoEP3tMZTPWzRiXnid2fzDO62hx-GY7w9re7osoOqcrdF8Duphbkg4okdzoBstN9ZuEQAEcYX_tiwV-vlAaxDBRdJRw0VUgDesfHDif1RwY2Ps4_QM2ed14PEWKKFcIpQJj_oGmxT709lXlDz_2XxQAbVFvbHYGfmg1-83woedEJ3XVL6ncG8MTmkIurefJr26eg4CflWpSjL6ZbNpE0xw4",
+										"user": {
+											"name": "Suzan",
+											"phone": "01811111111",
+											"email": "suzan@gmail.com",
+											"updated_at": "2022-02-16T05:27:01.000000Z",
+											"created_at": "2022-02-16T05:27:01.000000Z",
+											"id": 3
+										}
+									}
+								
+					--Tar mane amra ekhane register kore login kore pelechi(jeheto access token peyechi), 
+	
+		
+											
+											
+
+//=================================================================================================================
+																//------------- #4 Laravel passport api user logout  -------------//
+//=================================================================================================================
+
+			//--------------------------------------------- api.php -------------------------------------------------------------------------------------------------------
+							Route::prefix('v1')->group(function(){
+									Route::middleware('auth:api')->group(function(){             //ekhane ei route gula access korte Login thaka lagbe.
+										Route::post('/logout',[AuthController::class,'logout']);
+									});
+							});		
+							
+			//--------------------------------------------- controller/api/Auth/AuthController.php ---------------------------------------------------------------------		
+							public function logout(){
+								Auth::user()->token()->revoke();
+								return response()->json([
+									'message' => 'User Logout Successfully'
+								]);
+							}
+							
+			//------------------------------------------------------- Postman ------------------------------------------------------------------------------------------
+					-- Now >> POSTMAN >> POST (method) >> URL (http://127.0.0.1:8000/api/v1/logout) >> Headers te info gula dibo:
+					
+					--"Token" k mot 4vabe use kora jai...
+	
+					//------(1)-------
+					Token use korar jonno amader k opore (POST, http://127.0.0.1:8000/api/v1/logout) diye er niche "Headers" e ager j 2ta "Accept" & "Content-Type" name e tar niche arekta new row add korte hobe "Authorization" name e R etar 'Value' te dithe hobe ('token_type(bearer)' ta erpor 1ta space then 'access_token' ta),...[agher post theke info gula neya], EX:----
+					
+							KEY -------------------------- VALUE
+						Accept			----------		application/json
+						Content-Type	----------		application/json
+						Authorization	----------		bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTU5ODM0ODQwMCwiZXhwIjoxNTk4MzUyMDAwLCJuYmYiOjE1OTgzNDg0MDAsImp0aSI6IkdJUFdCWXI3Tm44QktjVnIiLCJzdWIiOjIsInBydiI6Ijg3ZTBhZjFlZjlmZDE1ODEyZmRlYzk3MTUzYTE0ZTBiMDQ3NTQ2YWEifQ.hCtPzxi_lcYi7HAnI2QxjtLSvtzdO7YhYt0ezeCyamo .......//[mane ekhane 1st er 'token_type' ta likbo,ja (bearer) ekhane,,, erpor Space dibo ekta, then "Access_token" .... then text-field tar baire onno kothao click korle text-field e 'bearer R access_token' ta set hoye jabe, --> send]
+						
+						--Output: 
+									{
+										"message": "User Logout Successfully"
+									}
+									
+								
+					//-------(2)--------
+					Token use korar jonno amader k opore (POST, http://127.0.0.1:8000/api/v1/logout) diye er niche "BODY" e ager motho 'x-www-form-urlencoded' e check mark diye, er niche ager motho new ekta ROW add korte hobe jekhane "KEY" te bosbe "token" R "VLAUE" te hbe (access_token ta),==> then 'Send' ... Ex:
+					
+									KEY -------------------------- VALUE
+									token			----------		eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTU5ODM0ODQwMCwiZXhwIjoxNTk4MzUyMDAwLCJuYmYiOjE1OTgzNDg0MDAsImp0aSI6IkdJUFdCWXI3Tm44QktjVnIiLCJzdWIiOjIsInBydiI6Ijg3ZTBhZjFlZjlmZDE1ODEyZmRlYzk3MTUzYTE0ZTBiMDQ3NTQ2YWEifQ.hCtPzxi_lcYi7HAnI2QxjtLSvtzdO7YhYt0ezeCyamo
+									
+						--Output:
+									{
+										"message": "User Logout Successfully"
+									}
+																	
+								
+					//-------(3)--------
+					"Authentication" tab e giye Dropdown theke 'Bearer Toker' select korle er danpashe ekta box asbe token deyar jonno, okhane token ta ene paste kore dibo.
+					
+//-------------------------//------------------------//----------------------//------------------------//----------------------//------------------------//---------------------			
+	
+											
+
+
+
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+														//------------------- VueCli Part -----------------------//
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+//=================================================================================================================
+																//------------- #5 Vuejs admin dashboard setup  -------------//
+//=================================================================================================================
+			-- amra eikhane admin-panel or admin Template hisebe "AdminLte" ( link: https://adminlte.io/ ) eita use korbo, because eta free, amra okhan theke eita download kore nibo, or chaile npm use kore( link: https://www.npmjs.com/package/admin-lte ) install kore kaj korte pari, npm use kore set up kora onek easy, but eikhane amra manually download korei kaj korbo.
+			
+			-- erpor amader k "axios" support dithe hobe, Link: https://www.npmjs.com/package/axios , amader project e request gula patanor jonno.
+					-- installation_command: npm install axios
+					
+			-- ekn amra amader download kora 'AdminLte' tar vitor theke "dist" r "plugins" file 2ta copy kore nibo, then amader VueCli project er "public" folder er vitor giye "admin" name e ekta file create kore er moddhe paste kore dibo. 
+			-- then AdminLte Template er root e j index.html file ache oita open kore oitar body er opor theke head shoho sob code copy kore ane amader VueCli project er "public/index.html" file e replace kore dibo. then same vabe template er index file ta theke again body tag er class gula copy kore amader VueCli project er "public/index" file e bosiye dibo. 
+			-- then again same vabe niche eshe body er niche javascript er cdn/script/jquery gula copy kore ene amader project er "public/index" er niche replace kore dibo.
+			-- then amader VueCli project er "src/App.vue" file e giye niche style gula sob delete kore dibo. router-link gula delete diyechi, router-view ta comment kore diyechi,
+			-- then project er "components" er vitore theke default "HelloWorld" component ta k delete kore diyechi,
+			-- then now project er "views" er vitor Home.vue file e jabo, okhane j "HelloWorld" component ta import kora hoyeche tar sob code delete diye dibo.
+			-- then amader AdminLte er root index file mane tar body er common part(body er full code css-link/js/jquery link/cdn gula badh e, mane wrapper ta full) ta copy kore ene amader project er "src/App.vue" er moddhe ene ekta main div er moddhe rekhe paste kore dibo. & navbar er opore ekta preloader er code ache, oita amra comment/delete kore dibo, because eigula jquery er preloader ekhane vue te eshe jamela korbe,
+			-- taile tkn site reload dile dekbo j amader style gula pacche na, because amader root html file mane "public/index.html" file e css/js er link gula pacceh na ba link hoy nai thik motho, taile amra path gula thik kore diye link koriye nibo, ekhane link up korte giye css link er path e shorote "plugins" er bodole "/admin/plugins/" hobe, R js link er path e shorote "dist" er bodole "/admin/dist/" hobe, R img link er path er shorote "dist" er bodole "/admin/dist/" hobe.
+			-- ekn site e dekbo j sobkicho valovabei kaj korteche, image,style,design sob valo vabe show hocche + kaj korteche, 
+			-- ekn amra amader component gula alada alada korbo, mane ei j Navbar, Sidebar egula... So ekn amra amader project er code er root file amane "src/App.vue" er vitor giye Navbar er code ta cut kore ene "components" er vitor "NavBar.vue" file(src/components/NavBar.vue) e eshe vue er template er moddhe ekta div niye otar moddhe paste kore dibo.
+								<template>
+									  <div>
+												NavBar code will go here...
+									  </div>
+								</template>
+								<script>
+									  export default {
+											name: 'NavBar'
+									  }
+								</script>
+								<style lang="scss" scoped>
+								</style>
+								
+			-- oporer motho same process e "SideBar.vue" name e ekta file/component niye sidebar er code paste korbo.
+			-- ekn amader project er "src/views/App.vue" er moodhe "NavBar" && "SideBar" component 2ta import kore dibo. er niche main part ta k cut kore niye okhane <router-view> bosiye dibo. now "src/views" er vitore ekta folder nie "pages" name e & er moddhe new file nei "Home.vue" name e & er vitore template part e cut kore ana main part ta paster kore dibo.
+			-- ekn amra "src/views" er moddhe j default "Home.vue" & "About.vue" file chilo ogula ar lagbe na, tai delete kore dibo, && "router/index.js" e giye about er route ta delete kore debo & Home route er path ta thik kore dibo(import Home form '../views/pages/Home.vue'), Taile amara ekn now amader Admin-panel-dashboard ta completely setup korte perechi,
+		//---------------------------------------------------------------------------------------------------------------------
+		
+		
+		
+		//--------------------------------------------- public/index.html -------------------------------------------------------------------------------------------------------
+			<!DOCTYPE html>
+			<html lang="en">
+			  <head>
+				<meta charset="utf-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1">
+				<title>AdminLTE 3 | Dashboard</title>
+
+				<!-- Google Font: Source Sans Pro -->
+				<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+				<!-- Font Awesome -->
+				<link rel="stylesheet" href="/admin/plugins/fontawesome-free/css/all.min.css">
+				<!-- Ionicons -->
+				<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+				<!-- Tempusdominus Bootstrap 4 -->
+				<link rel="stylesheet" href="/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+				<!-- iCheck -->
+				<link rel="stylesheet" href="/admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+				<!-- JQVMap -->
+				<link rel="stylesheet" href="/admin/plugins/jqvmap/jqvmap.min.css">
+				<!-- Theme style -->
+				<link rel="stylesheet" href="/admin/dist/css/adminlte.min.css">
+				<!-- overlayScrollbars -->
+				<link rel="stylesheet" href="/admin/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+				<!-- Daterange picker -->
+				<link rel="stylesheet" href="/admin/plugins/daterangepicker/daterangepicker.css">
+				<!-- summernote -->
+				<link rel="stylesheet" href="/admin/plugins/summernote/summernote-bs4.min.css">
+			  </head>
+
+			  <body class="hold-transition sidebar-mini layout-fixed">
+				<noscript>
+				  <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+				</noscript>
+
+				<div id="app"></div>
+				<!-- built files will be auto injected -->
+
+				<script src="/admin/plugins/jquery/jquery.min.js"></script>
+				<!-- jQuery UI 1.11.4 -->
+				<script src="/admin/plugins/jquery-ui/jquery-ui.min.js"></script>
+				<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+				<script>
+				  $.widget.bridge('uibutton', $.ui.button)
+				</script>
+				<!-- Bootstrap 4 -->
+				<script src="/admin/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+				<!-- ChartJS -->
+				<script src="/admin/plugins/chart.js/Chart.min.js"></script>
+				<!-- Sparkline -->
+				<script src="/admin/plugins/sparklines/sparkline.js"></script>
+				<!-- JQVMap -->
+				<script src="/admin/plugins/jqvmap/jquery.vmap.min.js"></script>
+				<script src="/admin/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+				<!-- jQuery Knob Chart -->
+				<script src="/admin/plugins/jquery-knob/jquery.knob.min.js"></script>
+				<!-- daterangepicker -->
+				<script src="/admin/plugins/moment/moment.min.js"></script>
+				<script src="/admin/plugins/daterangepicker/daterangepicker.js"></script>
+				<!-- Tempusdominus Bootstrap 4 -->
+				<script src="/admin/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+				<!-- Summernote -->
+				<script src="/admin/plugins/summernote/summernote-bs4.min.js"></script>
+				<!-- overlayScrollbars -->
+				<script src="/admin/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+				<!-- AdminLTE App -->
+				<script src="/admin/dist/js/adminlte.js"></script>
+				<!-- AdminLTE for demo purposes -->
+				<script src="/admin/dist/js/demo.js"></script>
+				<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+				<script src="/admin/dist/js/pages/dashboard.js"></script>
+			  </body>
+
+			</html>
+  
+
+//--------------------------------------------- src/App.vue --------------------------------------------------------------------------------------------------------------------
+			<template>
+			  <div>
+				<div class="wrapper">
+
+				  <!-- Navbar -->
+				  <NavBar></NavBar>
+
+				  <!-- Main Sidebar Container -->
+				  <side-bar></side-bar>
+
+				  <!-- Content Wrapper. Contains page content -->
+				  <router-view></router-view>
+
+				</div><!-- ./wrapper -->
+			  </div>
+
+			</template>
+
+			<script>
+			import NavBar from "./components/NavBar.vue";
+			import SideBar from "./components/SideBar.vue";
+			export default {
+			  components: { NavBar, SideBar },
+			};
+			</script>
+
+
+//--------------------------------------------- src/components/NavBar.vue -------------------------------------------------------------------------------------------------------
+			<template>
+			  <div>
+				<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+				  <!-- Left navbar links -->
+				  <ul class="navbar-nav">
+					<li class="nav-item">
+					  <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+					</li>
+					<li class="nav-item d-none d-sm-inline-block">
+					  <a href="index3.html" class="nav-link">Home</a>
+					</li>
+					<li class="nav-item d-none d-sm-inline-block">
+					  <a href="#" class="nav-link">Contact</a>
+					</li>
+				  </ul>
+
+				  <!-- Right navbar links -->
+				  <ul class="navbar-nav ml-auto">
+					<!-- Navbar Search -->
+					<li class="nav-item">
+					  <a class="nav-link" data-widget="navbar-search" href="#" role="button">
+						<i class="fas fa-search"></i>
+					  </a>
+					  <div class="navbar-search-block">
+						<form class="form-inline">
+						  <div class="input-group input-group-sm">
+							<input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+							<div class="input-group-append">
+							  <button class="btn btn-navbar" type="submit">
+								<i class="fas fa-search"></i>
+							  </button>
+							  <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+								<i class="fas fa-times"></i>
+							  </button>
+							</div>
+						  </div>
+						</form>
+					  </div>
+					</li>
+
+					<!-- Messages Dropdown Menu -->
+					<li class="nav-item dropdown">
+					  <a class="nav-link" data-toggle="dropdown" href="#">
+						<i class="far fa-comments"></i>
+						<span class="badge badge-danger navbar-badge">3</span>
+					  </a>
+					  <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+						<a href="#" class="dropdown-item">
+						  <!-- Message Start -->
+						  <div class="media">
+							<img src="/admin/dist/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle">
+							<div class="media-body">
+							  <h3 class="dropdown-item-title">
+								Brad Diesel
+								<span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
+							  </h3>
+							  <p class="text-sm">Call me whenever you can...</p>
+							  <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+							</div>
+						  </div>
+						  <!-- Message End -->
+						</a>
+						<div class="dropdown-divider"></div>
+						<a href="#" class="dropdown-item">
+						  <!-- Message Start -->
+						  <div class="media">
+							<img src="/admin/dist/img/user8-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
+							<div class="media-body">
+							  <h3 class="dropdown-item-title">
+								John Pierce
+								<span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
+							  </h3>
+							  <p class="text-sm">I got your message bro</p>
+							  <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+							</div>
+						  </div>
+						  <!-- Message End -->
+						</a>
+						<div class="dropdown-divider"></div>
+						<a href="#" class="dropdown-item">
+						  <!-- Message Start -->
+						  <div class="media">
+							<img src="/admin/dist/img/user3-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
+							<div class="media-body">
+							  <h3 class="dropdown-item-title">
+								Nora Silvester
+								<span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>
+							  </h3>
+							  <p class="text-sm">The subject goes here</p>
+							  <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+							</div>
+						  </div>
+						  <!-- Message End -->
+						</a>
+						<div class="dropdown-divider"></div>
+						<a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
+					  </div>
+					</li>
+					<!-- Notifications Dropdown Menu -->
+					<li class="nav-item dropdown">
+					  <a class="nav-link" data-toggle="dropdown" href="#">
+						<i class="far fa-bell"></i>
+						<span class="badge badge-warning navbar-badge">15</span>
+					  </a>
+					  <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+						<span class="dropdown-item dropdown-header">15 Notifications</span>
+						<div class="dropdown-divider"></div>
+						<a href="#" class="dropdown-item">
+						  <i class="fas fa-envelope mr-2"></i> 4 new messages
+						  <span class="float-right text-muted text-sm">3 mins</span>
+						</a>
+						<div class="dropdown-divider"></div>
+						<a href="#" class="dropdown-item">
+						  <i class="fas fa-users mr-2"></i> 8 friend requests
+						  <span class="float-right text-muted text-sm">12 hours</span>
+						</a>
+						<div class="dropdown-divider"></div>
+						<a href="#" class="dropdown-item">
+						  <i class="fas fa-file mr-2"></i> 3 new reports
+						  <span class="float-right text-muted text-sm">2 days</span>
+						</a>
+						<div class="dropdown-divider"></div>
+						<a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+					  </div>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+						<i class="fas fa-expand-arrows-alt"></i>
+					  </a>
+					</li>
+					<li class="nav-item">
+					  <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+						<i class="fas fa-th-large"></i>
+					  </a>
+					</li>
+				  </ul>
+				</nav>
+			  </div>
+			</template>
+
+			<script>
+			export default {
+				name:'NavBar'
+			}
+			</script>
+
+			<style>
+			</style>
+
+
+//--------------------------------------------- src/components/SideBar.vue -------------------------------------------------------------------------------------------------------
+			<template>
+			  <div>
+				<aside class="main-sidebar sidebar-dark-primary elevation-4">
+				  <!-- Brand Logo -->
+				  <a href="index3.html" class="brand-link">
+					<img src="/admin/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+					<span class="brand-text font-weight-light">AdminLTE 3</span>
+				  </a>
+
+				  <!-- Sidebar -->
+				  <div class="sidebar">
+					<!-- Sidebar user panel (optional) -->
+					<div class="user-panel mt-3 pb-3 mb-3 d-flex">
+					  <div class="image">
+						<img src="/admin/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+					  </div>
+					  <div class="info">
+						<a href="#" class="d-block">Alexander Pierce</a>
+					  </div>
+					</div>
+
+					<!-- SidebarSearch Form -->
+					<div class="form-inline">
+					  <div class="input-group" data-widget="sidebar-search">
+						<input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+						<div class="input-group-append">
+						  <button class="btn btn-sidebar">
+							<i class="fas fa-search fa-fw"></i>
+						  </button>
+						</div>
+					  </div>
+					</div>
+
+					<!-- Sidebar Menu -->
+					<nav class="mt-2">
+					  <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+						<!-- Add icons to the links using the .nav-icon class
+							with font-awesome or any other icon font library -->
+						<li class="nav-item menu-open">
+						  <a href="#" class="nav-link active">
+							<i class="nav-icon fas fa-tachometer-alt"></i>
+							<p>
+							  Dashboard
+							  <i class="right fas fa-angle-left"></i>
+							</p>
+						  </a>
+						  <ul class="nav nav-treeview">
+							<li class="nav-item">
+							  <a href="./index.html" class="nav-link active">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Dashboard v1</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="./index2.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Dashboard v2</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="./index3.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Dashboard v3</p>
+							  </a>
+							</li>
+						  </ul>
+						</li>
+						<li class="nav-item">
+						  <a href="pages/widgets.html" class="nav-link">
+							<i class="nav-icon fas fa-th"></i>
+							<p>
+							  Widgets
+							  <span class="right badge badge-danger">New</span>
+							</p>
+						  </a>
+						</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="nav-icon fas fa-copy"></i>
+							<p>
+							  Layout Options
+							  <i class="fas fa-angle-left right"></i>
+							  <span class="badge badge-info right">6</span>
+							</p>
+						  </a>
+						  <ul class="nav nav-treeview">
+							<li class="nav-item">
+							  <a href="pages/layout/top-nav.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Top Navigation</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/layout/top-nav-sidebar.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Top Navigation + Sidebar</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/layout/boxed.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Boxed</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/layout/fixed-sidebar.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Fixed Sidebar</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/layout/fixed-sidebar-custom.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Fixed Sidebar <small>+ Custom Area</small></p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/layout/fixed-topnav.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Fixed Navbar</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/layout/fixed-footer.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Fixed Footer</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/layout/collapsed-sidebar.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Collapsed Sidebar</p>
+							  </a>
+							</li>
+						  </ul>
+						</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="nav-icon fas fa-chart-pie"></i>
+							<p>
+							  Charts
+							  <i class="right fas fa-angle-left"></i>
+							</p>
+						  </a>
+						  <ul class="nav nav-treeview">
+							<li class="nav-item">
+							  <a href="pages/charts/chartjs.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>ChartJS</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/charts/flot.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Flot</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/charts/inline.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Inline</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/charts/uplot.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>uPlot</p>
+							  </a>
+							</li>
+						  </ul>
+						</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="nav-icon fas fa-tree"></i>
+							<p>
+							  UI Elements
+							  <i class="fas fa-angle-left right"></i>
+							</p>
+						  </a>
+						  <ul class="nav nav-treeview">
+							<li class="nav-item">
+							  <a href="pages/UI/general.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>General</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/UI/icons.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Icons</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/UI/buttons.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Buttons</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/UI/sliders.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Sliders</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/UI/modals.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Modals & Alerts</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/UI/navbar.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Navbar & Tabs</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/UI/timeline.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Timeline</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/UI/ribbons.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Ribbons</p>
+							  </a>
+							</li>
+						  </ul>
+						</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="nav-icon fas fa-edit"></i>
+							<p>
+							  Forms
+							  <i class="fas fa-angle-left right"></i>
+							</p>
+						  </a>
+						  <ul class="nav nav-treeview">
+							<li class="nav-item">
+							  <a href="pages/forms/general.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>General Elements</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/forms/advanced.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Advanced Elements</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/forms/editors.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Editors</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/forms/validation.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Validation</p>
+							  </a>
+							</li>
+						  </ul>
+						</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="nav-icon fas fa-table"></i>
+							<p>
+							  Tables
+							  <i class="fas fa-angle-left right"></i>
+							</p>
+						  </a>
+						  <ul class="nav nav-treeview">
+							<li class="nav-item">
+							  <a href="pages/tables/simple.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Simple Tables</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/tables/data.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>DataTables</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/tables/jsgrid.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>jsGrid</p>
+							  </a>
+							</li>
+						  </ul>
+						</li>
+						<li class="nav-header">EXAMPLES</li>
+						<li class="nav-item">
+						  <a href="pages/calendar.html" class="nav-link">
+							<i class="nav-icon far fa-calendar-alt"></i>
+							<p>
+							  Calendar
+							  <span class="badge badge-info right">2</span>
+							</p>
+						  </a>
+						</li>
+						<li class="nav-item">
+						  <a href="pages/gallery.html" class="nav-link">
+							<i class="nav-icon far fa-image"></i>
+							<p>
+							  Gallery
+							</p>
+						  </a>
+						</li>
+						<li class="nav-item">
+						  <a href="pages/kanban.html" class="nav-link">
+							<i class="nav-icon fas fa-columns"></i>
+							<p>
+							  Kanban Board
+							</p>
+						  </a>
+						</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="nav-icon far fa-envelope"></i>
+							<p>
+							  Mailbox
+							  <i class="fas fa-angle-left right"></i>
+							</p>
+						  </a>
+						  <ul class="nav nav-treeview">
+							<li class="nav-item">
+							  <a href="pages/mailbox/mailbox.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Inbox</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/mailbox/compose.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Compose</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/mailbox/read-mail.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Read</p>
+							  </a>
+							</li>
+						  </ul>
+						</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="nav-icon fas fa-book"></i>
+							<p>
+							  Pages
+							  <i class="fas fa-angle-left right"></i>
+							</p>
+						  </a>
+						  <ul class="nav nav-treeview">
+							<li class="nav-item">
+							  <a href="pages/examples/invoice.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Invoice</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/profile.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Profile</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/e-commerce.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>E-commerce</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/projects.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Projects</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/project-add.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Project Add</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/project-edit.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Project Edit</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/project-detail.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Project Detail</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/contacts.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Contacts</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/faq.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>FAQ</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/contact-us.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Contact us</p>
+							  </a>
+							</li>
+						  </ul>
+						</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="nav-icon far fa-plus-square"></i>
+							<p>
+							  Extras
+							  <i class="fas fa-angle-left right"></i>
+							</p>
+						  </a>
+						  <ul class="nav nav-treeview">
+							<li class="nav-item">
+							  <a href="#" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>
+								  Login & Register v1
+								  <i class="fas fa-angle-left right"></i>
+								</p>
+							  </a>
+							  <ul class="nav nav-treeview">
+								<li class="nav-item">
+								  <a href="pages/examples/login.html" class="nav-link">
+									<i class="far fa-circle nav-icon"></i>
+									<p>Login v1</p>
+								  </a>
+								</li>
+								<li class="nav-item">
+								  <a href="pages/examples/register.html" class="nav-link">
+									<i class="far fa-circle nav-icon"></i>
+									<p>Register v1</p>
+								  </a>
+								</li>
+								<li class="nav-item">
+								  <a href="pages/examples/forgot-password.html" class="nav-link">
+									<i class="far fa-circle nav-icon"></i>
+									<p>Forgot Password v1</p>
+								  </a>
+								</li>
+								<li class="nav-item">
+								  <a href="pages/examples/recover-password.html" class="nav-link">
+									<i class="far fa-circle nav-icon"></i>
+									<p>Recover Password v1</p>
+								  </a>
+								</li>
+							  </ul>
+							</li>
+							<li class="nav-item">
+							  <a href="#" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>
+								  Login & Register v2
+								  <i class="fas fa-angle-left right"></i>
+								</p>
+							  </a>
+							  <ul class="nav nav-treeview">
+								<li class="nav-item">
+								  <a href="pages/examples/login-v2.html" class="nav-link">
+									<i class="far fa-circle nav-icon"></i>
+									<p>Login v2</p>
+								  </a>
+								</li>
+								<li class="nav-item">
+								  <a href="pages/examples/register-v2.html" class="nav-link">
+									<i class="far fa-circle nav-icon"></i>
+									<p>Register v2</p>
+								  </a>
+								</li>
+								<li class="nav-item">
+								  <a href="pages/examples/forgot-password-v2.html" class="nav-link">
+									<i class="far fa-circle nav-icon"></i>
+									<p>Forgot Password v2</p>
+								  </a>
+								</li>
+								<li class="nav-item">
+								  <a href="pages/examples/recover-password-v2.html" class="nav-link">
+									<i class="far fa-circle nav-icon"></i>
+									<p>Recover Password v2</p>
+								  </a>
+								</li>
+							  </ul>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/lockscreen.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Lockscreen</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/legacy-user-menu.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Legacy User Menu</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/language-menu.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Language Menu</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/404.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Error 404</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/500.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Error 500</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/pace.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Pace</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/examples/blank.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Blank Page</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="starter.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Starter Page</p>
+							  </a>
+							</li>
+						  </ul>
+						</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="nav-icon fas fa-search"></i>
+							<p>
+							  Search
+							  <i class="fas fa-angle-left right"></i>
+							</p>
+						  </a>
+						  <ul class="nav nav-treeview">
+							<li class="nav-item">
+							  <a href="pages/search/simple.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Simple Search</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="pages/search/enhanced.html" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Enhanced</p>
+							  </a>
+							</li>
+						  </ul>
+						</li>
+						<li class="nav-header">MISCELLANEOUS</li>
+						<li class="nav-item">
+						  <a href="iframe.html" class="nav-link">
+							<i class="nav-icon fas fa-ellipsis-h"></i>
+							<p>Tabbed IFrame Plugin</p>
+						  </a>
+						</li>
+						<li class="nav-item">
+						  <a href="https://adminlte.io/docs/3.1/" class="nav-link">
+							<i class="nav-icon fas fa-file"></i>
+							<p>Documentation</p>
+						  </a>
+						</li>
+						<li class="nav-header">MULTI LEVEL EXAMPLE</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="fas fa-circle nav-icon"></i>
+							<p>Level 1</p>
+						  </a>
+						</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="nav-icon fas fa-circle"></i>
+							<p>
+							  Level 1
+							  <i class="right fas fa-angle-left"></i>
+							</p>
+						  </a>
+						  <ul class="nav nav-treeview">
+							<li class="nav-item">
+							  <a href="#" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Level 2</p>
+							  </a>
+							</li>
+							<li class="nav-item">
+							  <a href="#" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>
+								  Level 2
+								  <i class="right fas fa-angle-left"></i>
+								</p>
+							  </a>
+							  <ul class="nav nav-treeview">
+								<li class="nav-item">
+								  <a href="#" class="nav-link">
+									<i class="far fa-dot-circle nav-icon"></i>
+									<p>Level 3</p>
+								  </a>
+								</li>
+								<li class="nav-item">
+								  <a href="#" class="nav-link">
+									<i class="far fa-dot-circle nav-icon"></i>
+									<p>Level 3</p>
+								  </a>
+								</li>
+								<li class="nav-item">
+								  <a href="#" class="nav-link">
+									<i class="far fa-dot-circle nav-icon"></i>
+									<p>Level 3</p>
+								  </a>
+								</li>
+							  </ul>
+							</li>
+							<li class="nav-item">
+							  <a href="#" class="nav-link">
+								<i class="far fa-circle nav-icon"></i>
+								<p>Level 2</p>
+							  </a>
+							</li>
+						  </ul>
+						</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="fas fa-circle nav-icon"></i>
+							<p>Level 1</p>
+						  </a>
+						</li>
+						<li class="nav-header">LABELS</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="nav-icon far fa-circle text-danger"></i>
+							<p class="text">Important</p>
+						  </a>
+						</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="nav-icon far fa-circle text-warning"></i>
+							<p>Warning</p>
+						  </a>
+						</li>
+						<li class="nav-item">
+						  <a href="#" class="nav-link">
+							<i class="nav-icon far fa-circle text-info"></i>
+							<p>Informational</p>
+						  </a>
+						</li>
+					  </ul>
+					</nav>
+					<!-- /.sidebar-menu -->
+				  </div>
+				  <!-- /.sidebar -->
+				</aside>
+			  </div>
+			</template>
+
+			<script>
+			export default {
+			}
+			</script>
+
+			<style>
+			</style>
+
+//--------------------------------------------- src/views/pages/Home.vue -------------------------------------------------------------------------------------------------------
+			<template>
+			  <div>
+				<div class="content-wrapper">
+				  <!-- Content Header (Page header) -->
+				  <div class="content-header">
+					<div class="container-fluid">
+					  <div class="row mb-2">
+						<div class="col-sm-6">
+						  <h1 class="m-0">Dashboard</h1>
+						</div><!-- /.col -->
+						<div class="col-sm-6">
+						  <ol class="breadcrumb float-sm-right">
+							<li class="breadcrumb-item"><a href="#">Home</a></li>
+							<li class="breadcrumb-item active">Dashboard v1</li>
+						  </ol>
+						</div><!-- /.col -->
+					  </div><!-- /.row -->
+					</div><!-- /.container-fluid -->
+				  </div>
+				  <!-- /.content-header -->
+
+				  <!-- Main content -->
+				  <section class="content">
+					<div class="container-fluid">
+					  <!-- Small boxes (Stat box) -->
+					  <div class="row">
+						<div class="col-lg-3 col-6">
+						  <!-- small box -->
+						  <div class="small-box bg-info">
+							<div class="inner">
+							  <h3>150</h3>
+
+							  <p>New Orders</p>
+							</div>
+							<div class="icon">
+							  <i class="ion ion-bag"></i>
+							</div>
+							<a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+						  </div>
+						</div>
+						<!-- ./col -->
+						<div class="col-lg-3 col-6">
+						  <!-- small box -->
+						  <div class="small-box bg-success">
+							<div class="inner">
+							  <h3>53<sup style="font-size: 20px">%</sup></h3>
+
+							  <p>Bounce Rate</p>
+							</div>
+							<div class="icon">
+							  <i class="ion ion-stats-bars"></i>
+							</div>
+							<a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+						  </div>
+						</div>
+						<!-- ./col -->
+						<div class="col-lg-3 col-6">
+						  <!-- small box -->
+						  <div class="small-box bg-warning">
+							<div class="inner">
+							  <h3>44</h3>
+
+							  <p>User Registrations</p>
+							</div>
+							<div class="icon">
+							  <i class="ion ion-person-add"></i>
+							</div>
+							<a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+						  </div>
+						</div>
+						<!-- ./col -->
+						<div class="col-lg-3 col-6">
+						  <!-- small box -->
+						  <div class="small-box bg-danger">
+							<div class="inner">
+							  <h3>65</h3>
+
+							  <p>Unique Visitors</p>
+							</div>
+							<div class="icon">
+							  <i class="ion ion-pie-graph"></i>
+							</div>
+							<a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+						  </div>
+						</div>
+						<!-- ./col -->
+					  </div>
+					  <!-- /.row -->
+					  <!-- Main row -->
+					  <div class="row">
+						<!-- Left col -->
+						<section class="col-lg-7 connectedSortable">
+						  <!-- Custom tabs (Charts with tabs)-->
+						  <div class="card">
+							<div class="card-header">
+							  <h3 class="card-title">
+								<i class="fas fa-chart-pie mr-1"></i>
+								Sales
+							  </h3>
+							  <div class="card-tools">
+								<ul class="nav nav-pills ml-auto">
+								  <li class="nav-item">
+									<a class="nav-link active" href="#revenue-chart" data-toggle="tab">Area</a>
+								  </li>
+								  <li class="nav-item">
+									<a class="nav-link" href="#sales-chart" data-toggle="tab">Donut</a>
+								  </li>
+								</ul>
+							  </div>
+							</div><!-- /.card-header -->
+							<div class="card-body">
+							  <div class="tab-content p-0">
+								<!-- Morris chart - Sales -->
+								<div class="chart tab-pane active" id="revenue-chart"
+									style="position: relative; height: 300px;">
+									<canvas id="revenue-chart-canvas" height="300" style="height: 300px;"></canvas>
+								</div>
+								<div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;">
+								  <canvas id="sales-chart-canvas" height="300" style="height: 300px;"></canvas>
+								</div>
+							  </div>
+							</div><!-- /.card-body -->
+						  </div>
+						  <!-- /.card -->
+
+						  <!-- DIRECT CHAT -->
+						  <div class="card direct-chat direct-chat-primary">
+							<div class="card-header">
+							  <h3 class="card-title">Direct Chat</h3>
+
+							  <div class="card-tools">
+								<span title="3 New Messages" class="badge badge-primary">3</span>
+								<button type="button" class="btn btn-tool" data-card-widget="collapse">
+								  <i class="fas fa-minus"></i>
+								</button>
+								<button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
+								  <i class="fas fa-comments"></i>
+								</button>
+								<button type="button" class="btn btn-tool" data-card-widget="remove">
+								  <i class="fas fa-times"></i>
+								</button>
+							  </div>
+							</div>
+							<!-- /.card-header -->
+							<div class="card-body">
+							  <!-- Conversations are loaded here -->
+							  <div class="direct-chat-messages">
+								<!-- Message. Default to the left -->
+								<div class="direct-chat-msg">
+								  <div class="direct-chat-infos clearfix">
+									<span class="direct-chat-name float-left">Alexander Pierce</span>
+									<span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
+								  </div>
+								  <!-- /.direct-chat-infos -->
+								  <img class="direct-chat-img" src="/admin/dist/img/user1-128x128.jpg" alt="message user image">
+								  <!-- /.direct-chat-img -->
+								  <div class="direct-chat-text">
+									Is this template really for free? That's unbelievable!
+								  </div>
+								  <!-- /.direct-chat-text -->
+								</div>
+								<!-- /.direct-chat-msg -->
+
+								<!-- Message to the right -->
+								<div class="direct-chat-msg right">
+								  <div class="direct-chat-infos clearfix">
+									<span class="direct-chat-name float-right">Sarah Bullock</span>
+									<span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
+								  </div>
+								  <!-- /.direct-chat-infos -->
+								  <img class="direct-chat-img" src="/admin/dist/img/user3-128x128.jpg" alt="message user image">
+								  <!-- /.direct-chat-img -->
+								  <div class="direct-chat-text">
+									You better believe it!
+								  </div>
+								  <!-- /.direct-chat-text -->
+								</div>
+								<!-- /.direct-chat-msg -->
+
+								<!-- Message. Default to the left -->
+								<div class="direct-chat-msg">
+								  <div class="direct-chat-infos clearfix">
+									<span class="direct-chat-name float-left">Alexander Pierce</span>
+									<span class="direct-chat-timestamp float-right">23 Jan 5:37 pm</span>
+								  </div>
+								  <!-- /.direct-chat-infos -->
+								  <img class="direct-chat-img" src="/admin/dist/img/user1-128x128.jpg" alt="message user image">
+								  <!-- /.direct-chat-img -->
+								  <div class="direct-chat-text">
+									Working with AdminLTE on a great new app! Wanna join?
+								  </div>
+								  <!-- /.direct-chat-text -->
+								</div>
+								<!-- /.direct-chat-msg -->
+
+								<!-- Message to the right -->
+								<div class="direct-chat-msg right">
+								  <div class="direct-chat-infos clearfix">
+									<span class="direct-chat-name float-right">Sarah Bullock</span>
+									<span class="direct-chat-timestamp float-left">23 Jan 6:10 pm</span>
+								  </div>
+								  <!-- /.direct-chat-infos -->
+								  <img class="direct-chat-img" src="/admin/dist/img/user3-128x128.jpg" alt="message user image">
+								  <!-- /.direct-chat-img -->
+								  <div class="direct-chat-text">
+									I would love to.
+								  </div>
+								  <!-- /.direct-chat-text -->
+								</div>
+								<!-- /.direct-chat-msg -->
+
+							  </div>
+							  <!--/.direct-chat-messages-->
+
+							  <!-- Contacts are loaded here -->
+							  <div class="direct-chat-contacts">
+								<ul class="contacts-list">
+								  <li>
+									<a href="#">
+									  <img class="contacts-list-img" src="/admin/dist/img/user1-128x128.jpg" alt="User Avatar">
+
+									  <div class="contacts-list-info">
+										<span class="contacts-list-name">
+										  Count Dracula
+										  <small class="contacts-list-date float-right">2/28/2015</small>
+										</span>
+										<span class="contacts-list-msg">How have you been? I was...</span>
+									  </div>
+									  <!-- /.contacts-list-info -->
+									</a>
+								  </li>
+								  <!-- End Contact Item -->
+								  <li>
+									<a href="#">
+									  <img class="contacts-list-img" src="/admin/dist/img/user7-128x128.jpg" alt="User Avatar">
+
+									  <div class="contacts-list-info">
+										<span class="contacts-list-name">
+										  Sarah Doe
+										  <small class="contacts-list-date float-right">2/23/2015</small>
+										</span>
+										<span class="contacts-list-msg">I will be waiting for...</span>
+									  </div>
+									  <!-- /.contacts-list-info -->
+									</a>
+								  </li>
+								  <!-- End Contact Item -->
+								  <li>
+									<a href="#">
+									  <img class="contacts-list-img" src="/admin/dist/img/user3-128x128.jpg" alt="User Avatar">
+
+									  <div class="contacts-list-info">
+										<span class="contacts-list-name">
+										  Nadia Jolie
+										  <small class="contacts-list-date float-right">2/20/2015</small>
+										</span>
+										<span class="contacts-list-msg">I'll call you back at...</span>
+									  </div>
+									  <!-- /.contacts-list-info -->
+									</a>
+								  </li>
+								  <!-- End Contact Item -->
+								  <li>
+									<a href="#">
+									  <img class="contacts-list-img" src="/admin/dist/img/user5-128x128.jpg" alt="User Avatar">
+
+									  <div class="contacts-list-info">
+										<span class="contacts-list-name">
+										  Nora S. Vans
+										  <small class="contacts-list-date float-right">2/10/2015</small>
+										</span>
+										<span class="contacts-list-msg">Where is your new...</span>
+									  </div>
+									  <!-- /.contacts-list-info -->
+									</a>
+								  </li>
+								  <!-- End Contact Item -->
+								  <li>
+									<a href="#">
+									  <img class="contacts-list-img" src="/admin/dist/img/user6-128x128.jpg" alt="User Avatar">
+
+									  <div class="contacts-list-info">
+										<span class="contacts-list-name">
+										  John K.
+										  <small class="contacts-list-date float-right">1/27/2015</small>
+										</span>
+										<span class="contacts-list-msg">Can I take a look at...</span>
+									  </div>
+									  <!-- /.contacts-list-info -->
+									</a>
+								  </li>
+								  <!-- End Contact Item -->
+								  <li>
+									<a href="#">
+									  <img class="contacts-list-img" src="/admin/dist/img/user8-128x128.jpg" alt="User Avatar">
+
+									  <div class="contacts-list-info">
+										<span class="contacts-list-name">
+										  Kenneth M.
+										  <small class="contacts-list-date float-right">1/4/2015</small>
+										</span>
+										<span class="contacts-list-msg">Never mind I found...</span>
+									  </div>
+									  <!-- /.contacts-list-info -->
+									</a>
+								  </li>
+								  <!-- End Contact Item -->
+								</ul>
+								<!-- /.contacts-list -->
+							  </div>
+							  <!-- /.direct-chat-pane -->
+							</div>
+							<!-- /.card-body -->
+							<div class="card-footer">
+							  <form action="#" method="post">
+								<div class="input-group">
+								  <input type="text" name="message" placeholder="Type Message ..." class="form-control">
+								  <span class="input-group-append">
+									<button type="button" class="btn btn-primary">Send</button>
+								  </span>
+								</div>
+							  </form>
+							</div>
+							<!-- /.card-footer-->
+						  </div>
+						  <!--/.direct-chat -->
+
+						  <!-- TO DO List -->
+						  <div class="card">
+							<div class="card-header">
+							  <h3 class="card-title">
+								<i class="ion ion-clipboard mr-1"></i>
+								To Do List
+							  </h3>
+
+							  <div class="card-tools">
+								<ul class="pagination pagination-sm">
+								  <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
+								  <li class="page-item"><a href="#" class="page-link">1</a></li>
+								  <li class="page-item"><a href="#" class="page-link">2</a></li>
+								  <li class="page-item"><a href="#" class="page-link">3</a></li>
+								  <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
+								</ul>
+							  </div>
+							</div>
+							<!-- /.card-header -->
+							<div class="card-body">
+							  <ul class="todo-list" data-widget="todo-list">
+								<li>
+								  <!-- drag handle -->
+								  <span class="handle">
+									<i class="fas fa-ellipsis-v"></i>
+									<i class="fas fa-ellipsis-v"></i>
+								  </span>
+								  <!-- checkbox -->
+								  <div  class="icheck-primary d-inline ml-2">
+									<input type="checkbox" value="" name="todo1" id="todoCheck1">
+									<label for="todoCheck1"></label>
+								  </div>
+								  <!-- todo text -->
+								  <span class="text">Design a nice theme</span>
+								  <!-- Emphasis label -->
+								  <small class="badge badge-danger"><i class="far fa-clock"></i> 2 mins</small>
+								  <!-- General tools such as edit or delete-->
+								  <div class="tools">
+									<i class="fas fa-edit"></i>
+									<i class="fas fa-trash-o"></i>
+								  </div>
+								</li>
+								<li>
+								  <span class="handle">
+									<i class="fas fa-ellipsis-v"></i>
+									<i class="fas fa-ellipsis-v"></i>
+								  </span>
+								  <div  class="icheck-primary d-inline ml-2">
+									<input type="checkbox" value="" name="todo2" id="todoCheck2" checked>
+									<label for="todoCheck2"></label>
+								  </div>
+								  <span class="text">Make the theme responsive</span>
+								  <small class="badge badge-info"><i class="far fa-clock"></i> 4 hours</small>
+								  <div class="tools">
+									<i class="fas fa-edit"></i>
+									<i class="fas fa-trash-o"></i>
+								  </div>
+								</li>
+								<li>
+								  <span class="handle">
+									<i class="fas fa-ellipsis-v"></i>
+									<i class="fas fa-ellipsis-v"></i>
+								  </span>
+								  <div  class="icheck-primary d-inline ml-2">
+									<input type="checkbox" value="" name="todo3" id="todoCheck3">
+									<label for="todoCheck3"></label>
+								  </div>
+								  <span class="text">Let theme shine like a star</span>
+								  <small class="badge badge-warning"><i class="far fa-clock"></i> 1 day</small>
+								  <div class="tools">
+									<i class="fas fa-edit"></i>
+									<i class="fas fa-trash-o"></i>
+								  </div>
+								</li>
+								<li>
+								  <span class="handle">
+									<i class="fas fa-ellipsis-v"></i>
+									<i class="fas fa-ellipsis-v"></i>
+								  </span>
+								  <div  class="icheck-primary d-inline ml-2">
+									<input type="checkbox" value="" name="todo4" id="todoCheck4">
+									<label for="todoCheck4"></label>
+								  </div>
+								  <span class="text">Let theme shine like a star</span>
+								  <small class="badge badge-success"><i class="far fa-clock"></i> 3 days</small>
+								  <div class="tools">
+									<i class="fas fa-edit"></i>
+									<i class="fas fa-trash-o"></i>
+								  </div>
+								</li>
+								<li>
+								  <span class="handle">
+									<i class="fas fa-ellipsis-v"></i>
+									<i class="fas fa-ellipsis-v"></i>
+								  </span>
+								  <div  class="icheck-primary d-inline ml-2">
+									<input type="checkbox" value="" name="todo5" id="todoCheck5">
+									<label for="todoCheck5"></label>
+								  </div>
+								  <span class="text">Check your messages and notifications</span>
+								  <small class="badge badge-primary"><i class="far fa-clock"></i> 1 week</small>
+								  <div class="tools">
+									<i class="fas fa-edit"></i>
+									<i class="fas fa-trash-o"></i>
+								  </div>
+								</li>
+								<li>
+								  <span class="handle">
+									<i class="fas fa-ellipsis-v"></i>
+									<i class="fas fa-ellipsis-v"></i>
+								  </span>
+								  <div  class="icheck-primary d-inline ml-2">
+									<input type="checkbox" value="" name="todo6" id="todoCheck6">
+									<label for="todoCheck6"></label>
+								  </div>
+								  <span class="text">Let theme shine like a star</span>
+								  <small class="badge badge-secondary"><i class="far fa-clock"></i> 1 month</small>
+								  <div class="tools">
+									<i class="fas fa-edit"></i>
+									<i class="fas fa-trash-o"></i>
+								  </div>
+								</li>
+							  </ul>
+							</div>
+							<!-- /.card-body -->
+							<div class="card-footer clearfix">
+							  <button type="button" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add item</button>
+							</div>
+						  </div>
+						  <!-- /.card -->
+						</section>
+						<!-- /.Left col -->
+						<!-- right col (We are only adding the ID to make the widgets sortable)-->
+						<section class="col-lg-5 connectedSortable">
+
+						  <!-- Map card -->
+						  <div class="card bg-gradient-primary">
+							<div class="card-header border-0">
+							  <h3 class="card-title">
+								<i class="fas fa-map-marker-alt mr-1"></i>
+								Visitors
+							  </h3>
+							  <!-- card tools -->
+							  <div class="card-tools">
+								<button type="button" class="btn btn-primary btn-sm daterange" title="Date range">
+								  <i class="far fa-calendar-alt"></i>
+								</button>
+								<button type="button" class="btn btn-primary btn-sm" data-card-widget="collapse" title="Collapse">
+								  <i class="fas fa-minus"></i>
+								</button>
+							  </div>
+							  <!-- /.card-tools -->
+							</div>
+							<div class="card-body">
+							  <div id="world-map" style="height: 250px; width: 100%;"></div>
+							</div>
+							<!-- /.card-body-->
+							<div class="card-footer bg-transparent">
+							  <div class="row">
+								<div class="col-4 text-center">
+								  <div id="sparkline-1"></div>
+								  <div class="text-white">Visitors</div>
+								</div>
+								<!-- ./col -->
+								<div class="col-4 text-center">
+								  <div id="sparkline-2"></div>
+								  <div class="text-white">Online</div>
+								</div>
+								<!-- ./col -->
+								<div class="col-4 text-center">
+								  <div id="sparkline-3"></div>
+								  <div class="text-white">Sales</div>
+								</div>
+								<!-- ./col -->
+							  </div>
+							  <!-- /.row -->
+							</div>
+						  </div>
+						  <!-- /.card -->
+
+						  <!-- solid sales graph -->
+						  <div class="card bg-gradient-info">
+							<div class="card-header border-0">
+							  <h3 class="card-title">
+								<i class="fas fa-th mr-1"></i>
+								Sales Graph
+							  </h3>
+
+							  <div class="card-tools">
+								<button type="button" class="btn bg-info btn-sm" data-card-widget="collapse">
+								  <i class="fas fa-minus"></i>
+								</button>
+								<button type="button" class="btn bg-info btn-sm" data-card-widget="remove">
+								  <i class="fas fa-times"></i>
+								</button>
+							  </div>
+							</div>
+							<div class="card-body">
+							  <canvas class="chart" id="line-chart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+							</div>
+							<!-- /.card-body -->
+							<div class="card-footer bg-transparent">
+							  <div class="row">
+								<div class="col-4 text-center">
+								  <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60"
+										data-fgColor="#39CCCC">
+
+								  <div class="text-white">Mail-Orders</div>
+								</div>
+								<!-- ./col -->
+								<div class="col-4 text-center">
+								  <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60"
+										data-fgColor="#39CCCC">
+
+								  <div class="text-white">Online</div>
+								</div>
+								<!-- ./col -->
+								<div class="col-4 text-center">
+								  <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60"
+										data-fgColor="#39CCCC">
+
+								  <div class="text-white">In-Store</div>
+								</div>
+								<!-- ./col -->
+							  </div>
+							  <!-- /.row -->
+							</div>
+							<!-- /.card-footer -->
+						  </div>
+						  <!-- /.card -->
+
+						  <!-- Calendar -->
+						  <div class="card bg-gradient-success">
+							<div class="card-header border-0">
+
+							  <h3 class="card-title">
+								<i class="far fa-calendar-alt"></i>
+								Calendar
+							  </h3>
+							  <!-- tools card -->
+							  <div class="card-tools">
+								<!-- button with a dropdown -->
+								<div class="btn-group">
+								  <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" data-offset="-52">
+									<i class="fas fa-bars"></i>
+								  </button>
+								  <div class="dropdown-menu" role="menu">
+									<a href="#" class="dropdown-item">Add new event</a>
+									<a href="#" class="dropdown-item">Clear events</a>
+									<div class="dropdown-divider"></div>
+									<a href="#" class="dropdown-item">View calendar</a>
+								  </div>
+								</div>
+								<button type="button" class="btn btn-success btn-sm" data-card-widget="collapse">
+								  <i class="fas fa-minus"></i>
+								</button>
+								<button type="button" class="btn btn-success btn-sm" data-card-widget="remove">
+								  <i class="fas fa-times"></i>
+								</button>
+							  </div>
+							  <!-- /. tools -->
+							</div>
+							<!-- /.card-header -->
+							<div class="card-body pt-0">
+							  <!--The calendar -->
+							  <div id="calendar" style="width: 100%"></div>
+							</div>
+							<!-- /.card-body -->
+						  </div>
+						  <!-- /.card -->
+						</section>
+						<!-- right col -->
+					  </div>
+					  <!-- /.row (main row) -->
+					</div><!-- /.container-fluid -->
+				  </section>
+				  <!-- /.content -->
+				</div>
+			  </div>
+			</template>
+
+			<script>
+			export default {
+				name:'Home'
+			}
+			</script>
+
+			<style>
+			</style>
+
+
+//--------------------------------------------- src/router/index.js ------------------------------------------------------------------------------------------------------------------
+			import { createRouter, createWebHistory } from 'vue-router'
+			import Home from '../views/pages/Home.vue'
+
+			const routes = [
+			  {
+				path: '/',
+				name: 'Home',
+				component: Home
+			  },
+
+			]
+
+			const router = createRouter({
+			  history: createWebHistory(process.env.BASE_URL),
+			  routes
+			})
+
+			export default router
+
+//----------------------//-------------------//-----------------------//------------------------//--------------------------//--------------------------//-------------------
+
+		
+		
+		
+		
+		
+		
+
+
+//=================================================================================================================
+													//----------- #6 Vuejs admin login & register component setup  -----------//
+//=================================================================================================================
+			-- ekhane amra login page er jonno AdminLTE er "AdminLTE-3.2.0/pages/examples/login-v2.html" ei file/design ta use korbo.
+			-- Now nicher motho folder+file create korbo.
+								-- src
+										-- views
+												-- auth
+														-- password
+																-- Forgot.vue
+																-- Reset.vue
+														-- Login.vue
+														-- Register.vue
+			
+			//--------------------------------------------- src/views/auth/Login.vue -------------------------------------------------------------------------------------------------------
+						<template>
+							  <div class="hold-transition login-page">
+								<div class="login-box">
+								  <!-- /.login-logo -->
+								  <div class="card card-outline card-primary">
+									<div class="card-header text-center">
+									  <a href="../../index2.html" class="h1"><b>Admin </b> Login</a>
+									</div>
+									<div class="card-body">
+									  <p class="login-box-msg">Sign in to start your session</p>
+
+									 <form >
+									  <div >
+									   <!-- <div class="alert alert-warning alert-dismissible fade show" role="alert">
+										 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+										   <span aria-hidden="true">&times;</span>
+										   <span class="sr-only">Close</span>
+										 </button>
+										 <strong></strong>
+									   </div> -->
+									  </div>
+										<div class="input-group mb-3">
+										  <input type="email" class="form-control"  placeholder="Email" />
+										  <div class="input-group-append">
+											<div class="input-group-text">
+											  <span class="fas fa-envelope"></span>
+											</div>
+										  </div>
+										</div>
+										<span class="text-danger" ></span>
+										<div class="input-group mb-3">
+										  <input
+											type="password"
+											class="form-control"
+											placeholder="Password"
+										  />
+										  <div class="input-group-append">
+											<div class="input-group-text">
+											  <span class="fas fa-lock"></span>
+											</div>
+										  </div>
+										</div>
+										 <span class="text-danger" ></span>
+										<div class="row">
+										  <div class="col-8">
+											<div class="icheck-primary">
+											  <input type="checkbox" id="remember" />
+											  <label for="remember"> Remember Me </label>
+											</div>
+										  </div>
+										  <!-- /.col -->
+										  <div class="col-4">
+											<button type="submit" class="btn btn-primary btn-block">
+											  Sign In
+											</button>
+										  </div>
+										  <!-- /.col -->
+										</div>
+									  </form>
+
+									  <p class="mb-1">
+										<a href="forgot-password.html">I forgot my password</a>
+									  </p>
+									
+									  <p class="mb-0">
+										<router-link :to="{name: 'Register'}" class="text-center"
+										  >Register a new membership</router-link
+										>
+									  </p>
+									</div>
+									<!-- /.card-body -->
+								  </div>
+								  <!-- /.card -->
+								</div>
+							  </div>
+							</template>
+
+							<script>
+							export default {
+								name: "Login",
+							};
+							</script>
+
+							<style>
+							</style>
+
+
+			//--------------------------------------------- src/views/auth/Register.vue -------------------------------------------------------------------------------------------------------
+						<template>
+							  <div class="hold-transition login-page">
+								<div class="login-box">
+								  <!-- /.login-logo -->
+								  <div class="card card-outline card-primary">
+									<div class="card-header text-center">
+									  <a href="../../index2.html" class="h1">Register</a>
+									</div>
+									<div class="card-body">
+									  <p class="login-box-msg">Register in to start your session</p>
+
+									  <form action="../../index3.html" method="post">
+										<div class="input-group mb-3">
+										  <input type="text" class="form-control" placeholder="name" />
+										  <div class="input-group-append">
+											<div class="input-group-text">
+											  <span class="fas fa-user"></span>
+											</div>
+										  </div>
+										</div>
+
+										<div class="input-group mb-3">
+										  <input type="text" class="form-control" placeholder="phone" />
+										  <div class="input-group-append">
+											<div class="input-group-text">
+											  <span class="fas fa-phone"></span>
+											</div>
+										  </div>
+										</div>
+
+										 <div class="input-group mb-3">
+										  <input type="email" class="form-control" placeholder="Email" />
+										  <div class="input-group-append">
+											<div class="input-group-text">
+											  <span class="fas fa-envelope"></span>
+											</div>
+										  </div>
+										</div>
+										<div class="input-group mb-3">
+										  <input
+											type="password"
+											class="form-control"
+											placeholder="Password"
+										  />
+										  <div class="input-group-append">
+											<div class="input-group-text">
+											  <span class="fas fa-lock"></span>
+											</div>
+										  </div>
+										</div>
+
+										<div class="input-group mb-3">
+										  <input
+											type="password"
+											class="form-control"
+											placeholder="Re-Type Password"
+										  />
+										  <div class="input-group-append">
+											<div class="input-group-text">
+											  <span class="fas fa-lock"></span>
+											</div>
+										  </div>
+										</div>
+
+										<div class="row">
+										  <div class="col-8">
+											<div class="icheck-primary">
+											  <input type="checkbox" id="remember" />
+											  <label for="remember"> Remember Me </label>
+											</div>
+										  </div>
+										  <!-- /.col -->
+										  <div class="col-4">
+											<button type="submit" class="btn btn-primary btn-block">
+											  Sign In
+											</button>
+										  </div>
+										  <!-- /.col -->
+										</div>
+									  </form>
+									  <p class="mb-0">
+										<router-link :to="{name:'Login'}"  class="text-center"
+										  >Return to Login</router-link>
+									  </p>
+									</div>
+									<!-- /.card-body -->
+								  </div>
+								  <!-- /.card -->
+								</div>
+							  </div>
+							</template>
+
+							<script>
+							export default {
+								name:'Register'
+							};
+							</script>
+
+							<style>
+							</style>
+										
+			
+			//--------------------------------------------- views/App.vue -------------------------------------------------------------------------------------------------------
+						<template>
+							  <div>
+								<div class="wrapper">
+
+								  <!-- Navbar -->
+								  <NavBar v-if="auth"></NavBar>
+
+								  <!-- Main Sidebar Container -->
+								  <side-bar v-if="auth"></side-bar>
+
+								  <!-- Content Wrapper. Contains page content -->
+								  <router-view></router-view>
+
+								</div><!-- ./wrapper -->
+							  </div>
+
+							</template>
+
+							<script>
+							import NavBar from "./components/NavBar.vue";
+							import SideBar from "./components/SideBar.vue";
+							export default {
+							  components: { NavBar, SideBar },
+							  data() {
+								return {
+								  auth:false,
+								}
+							  },
+							};
+							</script>
+
+
+			//--------------------------------------------- router/index.js -------------------------------------------------------------------------------------------------------
+							import { createRouter, createWebHistory } from 'vue-router'
+							import Login from '../views/auth/Login.vue'
+							import Register from '../views/auth/Register.vue'
+							import Home from '../views/pages/Home.vue'
+
+							const routes = [
+							  {
+								path: '/',
+								name: 'Login',
+								component: Login
+							  },
+
+							  {
+								path: '/register',
+								name: 'Register',
+								component: Register
+							  },
+							  
+							  {
+								path: '/admin/home',
+								name: 'Home',
+								component: Home
+							  },
+							  
+							]
+
+							const router = createRouter({
+							  history: createWebHistory(process.env.BASE_URL),
+							  routes
+							})
+
+							export default router
+//-----------------//----------------------//----------------------//--------------------//-------------------//---------------------//--------------------//------
+
+								
+									
+				
+		
+
+
+//==========================================================================================================================
+											//-------- #7 Vuejs | admin login -- #8 Vuejs | Vuex Data Save Permanently  ---------//
+//==========================================================================================================================
+			-- must be axios ta install kore nithe hobe.
+				-- erpor amader k "axios" support dithe hobe, Link: https://www.npmjs.com/package/axios , amader project e request gula patanor jonno.
+				-- installation_command: npm install axios
+				
+			-- amra ekhane "Vuex" er maddhome data adan-prodan korbo.
+			-- Vuex install korar pore amader project e "store" folder er vitore "index.js" name e ekta file create hoyeche, jekhane amra vuex er code gula likbo.
+			-- amra ekhane "store/index.js" e modules vag kore kore kaj korbo. tai "store" er moddhe new ekta folder "modules" nibo er moddhe new ekta file "auth.js" nibo, auth er sob kicho amra ei auth.js modules e likbo, ekn ei auth.js modules ta k amader "store/index.js" e support dithe hobe mane import kore dithe hobe,
+							-- store
+									--modules
+											-- auth.js
+									-- index.js
+									
+			-- amra dekte pacchi page reload dile "Vuex" er data sob remove hoye empty/null hoye jacche, mane auth er auth_token, email, auth_status etc sob info gula remove hoye jacche, ei problem ta koyekta upai e solve kora jethe pare, 
+							-- 1 -- 1st upai holo ai data gula amra "local storage" e save korte pari, 
+							-- 2 -- but amra ekhane onoo ekta upai mane vuex er ekta plugin "vuex-persistedstate" ( link: https://github.com/robinvdvleuten/vuex-persistedstate ) use kore permanently data gula save kore rakbo.
+							
+			-- "Vuex-Persistedstate" : link: https://github.com/robinvdvleuten/vuex-persistedstate
+							-- installation: npm install --save vuex-persistedstate
+							-- in store/index.js --------------
+										import createPersistedState from "vuex-persistedstate";
+										export default createStore({
+											  ....   ....   ....   ....   ....   ....   ....  ....
+											  // plugins: [createPersistedState()],		//amader sob data save lagbe na, only auth er data gula save dorkar tai,eta comment
+											  plugins: [createPersistedState({			// only auth er data/info gula save kora hocche
+												paths: ['auth'],
+											  })],
+										})
+ 			
+			
+			//--------------------------------------------- views/auth/Login.vue -------------------------------------------------------------------------------------------------------
+							<template>
+								  <div class="hold-transition login-page">
+									<div class="login-box">
+									  <!-- /.login-logo -->
+									  <div class="card card-outline card-primary">
+										<div class="card-header text-center">
+										  <a href="#" class="h1"><b>Admin </b> Login</a>
+										</div>
+										<div class="card-body">
+										  <p class="login-box-msg">Sign in to start your session</p>
+
+										 <form @submit.prevent="adminLogin">
+										  <div v-if="errors.loginError">
+										   <div class="alert alert-warning alert-dismissible fade show" role="alert">
+											 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+											   <span aria-hidden="true">&times;</span>
+											   <span class="sr-only">Close</span>
+											 </button>
+											 <strong>{{errors.loginError}}</strong>
+										   </div>
+										  </div>
+											<div class="input-group mb-3">
+											  <input type="email" class="form-control" v-model="form.email"  placeholder="Email" />
+											  <div class="input-group-append">
+												<div class="input-group-text">
+												  <span class="fas fa-envelope"></span>
+												</div>
+											  </div>
+											</div>
+											<span class="text-danger" v-if="errors.email">{{errors.email[0]}}</span>
+											<div class="input-group mb-3">
+											  <input
+												type="password"
+												class="form-control"
+												placeholder="Password"
+												v-model="form.password"
+											  />
+											  <div class="input-group-append">
+												<div class="input-group-text">
+												  <span class="fas fa-lock"></span>
+												</div>
+											  </div>
+											</div>
+											 <span class="text-danger" v-if="errors.password">{{errors.password[0]}}</span>
+											<div class="row">
+											  <div class="col-8">
+												<div class="icheck-primary">
+												  <input type="checkbox" id="remember" />
+												  <label for="remember"> Remember Me </label>
+												</div>
+											  </div>
+											  <!-- /.col -->
+											  <div class="col-4">
+												<button type="submit" class="btn btn-primary btn-block">Sign In</button>
+											  </div>
+											  <!-- /.col -->
+											</div>
+										  </form>
+
+										  <p class="mb-1">
+											<a href="forgot-password.html">I forgot my password</a>
+										  </p>
+										
+										  <p class="mb-0">
+											<router-link :to="{name: 'Register'}" class="text-center">Register a new membership</router-link>
+										  </p>
+										</div>
+										<!-- /.card-body -->
+									  </div>
+									  <!-- /.card -->
+									</div>
+								  </div>
+								</template>
+
+								<script>
+								export default {
+									name: "Login",
+
+									data() {
+									  return {
+										form:{
+										  email:null,
+										  password:null,
+										},
+										errors:{},
+									  }
+									},
+
+									methods: {
+									  adminLogin(){
+										this.$store.dispatch("LOGIN",this.form)
+										.then((res) => {
+										  console.log(res.data)
+										  this.$router.push({ name: 'Home'})
+										}).catch((err) => {
+										   console.log(err.response.data.errors)
+										  this.errors = err.response.data.errors
+										});
+									  }
+									},
+								 
+								};
+								</script>
+
+								<style>
+								</style>
+
+
+			//--------------------------------------------- store/index.js -------------------------------------------------------------------------------------------------------
+							import { createStore } from 'vuex'
+								import createPersistedState from "vuex-persistedstate";
+								import {auth} from './modules/auth'
+
+								export default createStore({
+								  state: { 
+								  },
+								  mutations: {
+								  },
+								  actions: {
+								  },
+								  modules: {
+									auth
+								  },
+								  // plugins: [createPersistedState()],		//amader sob data save lagbe na, only auth er data gula save dorkar tai,eta comment
+								  plugins: [createPersistedState({			// only auth er data/info gula save kora hocche
+									paths: ['auth'],
+								  })],
+							})
+							
+							
+			//--------------------------------------------- store/modules/auth.js -------------------------------------------------------------------------------------------------------
+							import axios from 'axios'
+								axios.defaults.baseURL = 'http://127.0.0.1:8000/api/v1';
+
+								export const auth = {
+									state: { 
+										auth_status:false,
+										auth_token:null,
+										auth_info:{
+											name: null,
+											email: null,
+											phone: null,
+											image: null,
+										}
+									},
+
+									getters:{
+										GET_AUTH_STATUS(state){
+											return state.auth_status;
+										},
+
+										GET_AUTH_TOKEN(state){
+											return state.auth_token;
+										},
+										
+										GET_AUTH_INFO(state){
+											return state.auth_info;
+										},
+									},
+
+									actions: {
+										LOGIN(context,loginData){
+										   return new Promise((resolve,reject)=>{
+											axios.post('/login',loginData)
+											.then((res) => {
+												// console.log(res.data)
+											   context.commit('SET_AUTH_TOKEN',res.data.access_token)
+											   context.commit('SET_AUTH_INFO',res.data.user)
+											   resolve(res)
+											}).catch((err) => {
+												reject(err)
+												// console.log(err.response.data.errors)
+											});
+										   })
+										}
+									},
+
+									mutations: {
+										SET_AUTH_TOKEN(state,token){
+											state.auth_token = token;
+											state.auth_status = true;
+										},
+
+										SET_AUTH_INFO(state,info){
+											state.auth_info.name = info.name;
+											state.auth_info.email = info.email;
+											state.auth_info.phone = info.phone;
+											state.auth_info.image = info.image;
+										}
+									},
+									
+								}
+
+
+			//--------------------------------------------- views/App.vue -------------------------------------------------------------------------------------------------------
+							<template>
+								  <div>
+									<div class="wrapper">
+
+									  <!-- Navbar -->
+									  <NavBar v-if="loggedInStatus"></NavBar>
+
+									  <!-- Main Sidebar Container -->
+									  <side-bar v-if="loggedInStatus"></side-bar>
+
+									  <!-- Content Wrapper. Contains page content -->
+									  <router-view></router-view>
+
+									</div>
+
+								  </div>
+
+								  <!-- <router-view/> -->
+								</template>
+
+								<script>
+								import NavBar from "./components/NavBar.vue";
+								import SideBar from "./components/SideBar.vue";
+
+								export default {
+								  components: { NavBar, SideBar },
+
+								  computed:{
+									loggedInStatus(){
+									  return this.$store.getters.GET_AUTH_STATUS;
+									}
+								  }
+								};
+								</script>
+
+//-----------------//----------------------//----------------------//--------------------//-------------------//---------------------//--------------------//------
+
+								
+
+
+
+								
+
+//=================================================================================================================
+																//------------- #9 Vuejs | Display Validation Errors  -------------//
+//=================================================================================================================
+			-- eta opore chole asche (Login.vue + api/Auth/AuthController) e, tai ar likhi nai.
+
+
+
+
+
+
+
+
+
+//=================================================================================================================
+																//------------- #10 Vuejs | Admin Logout  -------------//
+//=================================================================================================================
+
+			//--------------------------------------------- src/components/SideBar.vue ---------------------------------------------------------------------------------------------
+			            <li class="nav-item">
+						  <a href="#" class="nav-link" @click.prevent="adminLogout">
+							<i class="nav-icon far fa-circle text-danger"></i>
+							<p>Logout</p>
+						  </a>
+						</li>
+						
+						
+						<script>
+						export default {
+								name:'SideBar',
+
+								methods: {
+								  adminLogout(){
+									this.$store.dispatch("LOGOUT")
+									.then((res) => {
+									  console.log(res.data)
+									  this.$router.push({ name: 'Login'})
+									}).catch(() => {
+									  
+									});
+								  }
+								},
+						}
+						</script>
+						
+						
+			//--------------------------------------------- store/modules/auth.js ---------------------------------------------------------------------------------------------
+								export const auth = {
+
+									actions: {
+										LOGOUT(context){
+										  // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;  //for passing auth token for logout
+										  axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.auth_token;
+										   return new Promise((resolve,reject)=>{
+											axios.post('/logout')
+											.then((res) => {
+												// console.log(res.data)
+											   context.commit('SET_AUTH_LOGOUT')
+											   resolve(res)
+											}).catch((err) => {
+												reject(err)
+												// console.log(err.response.data.errors)
+											});
+										   })
+										}
+									},
+
+									mutations: {
+										SET_AUTH_LOGOUT(state){
+											state.auth_token = null;
+											state.auth_status = false;
+
+											state.auth_info = {
+											  name: null,
+											  email: null,
+											  phone: null,
+											  image: null,
+											}
+										}
+									},
+									
+								}
+										
+//-----------------//----------------------//----------------------//--------------------//-------------------//---------------------//--------------------//------
+		
+
+
+
+
+
+
+
+
+
+//=================================================================================================================
+																//------------- #11 Vuejs | Admin Registration  -------------//
+//=================================================================================================================
+
+			//--------------------------------------------- views/auth/Register.vue -------------------------------------------------------------------------------------------------------
+						<template>
+							  <div class="hold-transition login-page">
+								<div class="login-box">
+								  <!-- /.login-logo -->
+								  <div class="card card-outline card-primary">
+									<div class="card-header text-center">
+									  <a href="../../index2.html" class="h1">Register</a>
+									</div>
+									<div class="card-body">
+									  <p class="login-box-msg">Register in to start your session</p>
+
+									  <form @submit.prevent="adminRegister">
+										<div class="input-group mb-3">
+										  <input type="text" class="form-control" placeholder="name" v-model="form.name" />
+										  <div class="input-group-append">
+											<div class="input-group-text">
+											  <span class="fas fa-user"></span>
+											</div>
+										  </div>
+										</div>
+										<span class="text-danger" v-if="errors.name">{{errors.name[0]}}</span>
+
+										<div class="input-group mb-3">
+										  <input type="text" class="form-control" placeholder="phone" v-model="form.phone" />
+										  <div class="input-group-append">
+											<div class="input-group-text">
+											  <span class="fas fa-phone"></span>
+											</div>
+										  </div>
+										</div>
+										<span class="text-danger" v-if="errors.phone">{{errors.phone[0]}}</span>
+
+										 <div class="input-group mb-3">
+										  <input type="email" class="form-control" placeholder="Email" v-model="form.email" />
+										  <div class="input-group-append">
+											<div class="input-group-text">
+											  <span class="fas fa-envelope"></span>
+											</div>
+										  </div>
+										</div>
+										<span class="text-danger" v-if="errors.email">{{errors.email[0]}}</span>
+
+
+										<div class="input-group mb-3">
+										  <input
+											type="password"
+											class="form-control"
+											placeholder="Password"
+											v-model="form.password"
+										  />
+										  <div class="input-group-append">
+											<div class="input-group-text">
+											  <span class="fas fa-lock"></span>
+											</div>
+										  </div>
+										</div>
+										<span class="text-danger" v-if="errors.password">{{errors.password[0]}}</span>
+
+										<div class="input-group mb-3">
+										  <input
+											type="password"
+											class="form-control"
+											placeholder="Re-Type Password"
+											v-model="form.password_confirmation"
+										  />
+										  <div class="input-group-append">
+											<div class="input-group-text">
+											  <span class="fas fa-lock"></span>
+											</div>
+										  </div>
+										</div>
+
+										<div class="row">
+										  <div class="col-8">
+											<div class="icheck-primary">
+											  <input type="checkbox" id="remember" />
+											  <label for="remember"> Remember Me </label>
+											</div>
+										  </div>
+										  <!-- /.col -->
+										  <div class="col-4">
+											<button type="submit" class="btn btn-primary btn-block">
+											  Sign In
+											</button>
+										  </div>
+										  <!-- /.col -->
+										</div>
+									  </form>
+									  <p class="mb-0">
+										<router-link :to="{name:'Login'}"  class="text-center">Return to Login</router-link>
+									  </p>
+									</div>
+									<!-- /.card-body -->
+								  </div>
+								  <!-- /.card -->
+								</div>
+							  </div>
+							</template>
+
+							<script>
+							export default {
+								name:'Register',
+
+								data() {
+								  return {
+									form:{
+									  name: null,
+									  phone: null,
+									  email: null,
+									  password: null,
+									  password_confirmation: null,
+									},
+
+									errors:{},
+								  }
+								},
+
+								methods: {
+								  adminRegister(){
+									this.$store.dispatch("REGISTRATION",this.form)
+									.then((res) => {
+									  console.log(res.data)
+									  this.$router.push({ name: 'Home'})
+									}).catch((err) => {
+									   console.log(err.response.data.errors)
+									   this.errors = err.response.data.errors
+									});
+								  }
+								},
+							};
+							</script>
+
+							<style>
+							</style>
+
+
+			//--------------------------------------------- store/modules/auth.js -------------------------------------------------------------------------------------------------------
+							import axios from 'axios'
+							axios.defaults.baseURL = 'http://127.0.0.1:8000/api/v1';
+
+							export const auth = {
+								state: { 
+									auth_status:false,
+									auth_token:null,
+									auth_info:{
+										name: null,
+										email: null,
+										phone: null,
+										image: null,
+									}
+								},
+
+								getters:{
+									GET_AUTH_STATUS(state){
+										return state.auth_status;
+									},
+
+									GET_AUTH_TOKEN(state){
+										return state.auth_token;
+									},
+									
+									GET_AUTH_INFO(state){
+										return state.auth_info;
+									},
+								},
+
+								actions: {
+									LOGIN(context,loginData){
+									   return new Promise((resolve,reject)=>{
+										axios.post('/login',loginData)
+										.then((res) => {
+											// console.log(res.data)
+										   context.commit('SET_AUTH_TOKEN',res.data.access_token)
+										   context.commit('SET_AUTH_INFO',res.data.user)
+										   resolve(res)
+										}).catch((err) => {
+											reject(err)
+											// console.log(err.response.data.errors)
+										});
+									   })
+									},
+
+									LOGOUT(context){
+									  // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;  //for passing auth token for logout
+									  axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.auth_token;
+									   return new Promise((resolve,reject)=>{
+										axios.post('/logout')
+										.then((res) => {
+											// console.log(res.data)
+										   context.commit('SET_AUTH_LOGOUT')
+										   resolve(res)
+										}).catch((err) => {
+											reject(err)
+											// console.log(err.response.data.errors)
+										});
+									   })
+									},
+
+									REGISTRATION(context,registrationData){						//---------------------------------------------
+									   return new Promise((resolve,reject)=>{
+										  axios.post('/register',registrationData)
+										  .then((res) => {
+											  // console.log(res.data)
+											context.commit('SET_AUTH_TOKEN',res.data.access_token)
+											context.commit('SET_AUTH_INFO',res.data.user)
+											resolve(res)
+										  }).catch((err) => {
+											  reject(err)
+											  // console.log(err.response.data.errors)
+										  });
+									   })
+									}
+								},
+
+								mutations: {
+									SET_AUTH_TOKEN(state,token){
+										state.auth_token = token;
+										state.auth_status = true;
+									},
+
+									SET_AUTH_INFO(state,info){
+										state.auth_info.name = info.name;
+										state.auth_info.email = info.email;
+										state.auth_info.phone = info.phone;
+										state.auth_info.image = info.image;
+									},
+
+									SET_AUTH_LOGOUT(state){
+										state.auth_token = null;
+										state.auth_status = false;
+
+										state.auth_info = {
+										  name: null,
+										  email: null,
+										  phone: null,
+										  image: null,
+										}
+									}
+								},
+								
+							}
+
+//-----------------//----------------------//----------------------//--------------------//-------------------//---------------------//--------------------//------------------------
+
+
+
+
+
+
+
+
+
+//=================================================================================================================
+																//------------- #12 Vuejs | Route Secure  -------------//
+//=================================================================================================================
+			--  In this video we will know howto protect authentication and guest routes from our application
+			-- vue router er website er "advanced" section er "Route Meta Fields" e ei route secure korar rules ta bola ache, 
+						-- link: https://v3.router.vuejs.org/guide/advanced/meta.html
+						-- note that --> tutorial e used vue-router version 3. but we used V.4. (for vue-router documentation)
+			
+			//--------------------------------------------- src/router/index.js -------------------------------------------------------------------------------------------------------
+							import { createRouter, createWebHistory } from 'vue-router'
+							import store from '../store';												//------------------------------------
+							import Login from '../views/auth/Login.vue'
+							import Register from '../views/auth/Register.vue'
+							import Home from '../views/pages/Home.vue'
+
+							const routes = [
+							  {
+								path: '/',
+								name: 'Login',
+								component: Login,
+								meta: { guest: true }   //if authenticated/after authenticated, will never access this		//------------------------------------
+							  },
+
+							  {
+								path: '/register',
+								name: 'Register',
+								component: Register,
+								meta: { guest: true }   //if authenticated/after authenticated, will never access this			//------------------------------------
+							  },
+							  
+							  {
+								path: '/admin/home',
+								name: 'Home',
+								component: Home,
+								meta: { requiresAuth: true }      //for --> only authenticated users can access this.
+							  },
+							  
+							]
+
+							const router = createRouter({
+							  history: createWebHistory(process.env.BASE_URL),
+							  routes
+							})
+
+							// eslint-disable-next-line no-unused-vars
+							router.beforeEach((to, from) => {															//--------------------------------------------
+							  // instead of having to check every route record with
+							  // to.matched.some(record => record.meta.requiresAuth)
+							  if (to.meta.requiresAuth && !store.getters.GET_AUTH_STATUS) {
+								// this route requires auth, check if logged in
+								// if not, redirect to login page.
+								return {
+								  path: '/',
+								  // save the location we were at to come back later
+								  query: { redirect: to.fullPath },
+								}
+							  }
+							  else if (to.meta.guest && store.getters.GET_AUTH_STATUS) {
+								// this route requires auth, check if logged in
+								// if not, redirect to login page.
+								return {
+								  path: '/admin/home',
+								  // save the location we were at to come back later
+								  query: { redirect: to.fullPath },
+								}
+							  }
+							})
+
+							export default router
+							
+//-----------------//----------------------//----------------------//--------------------//-------------------//---------------------//--------------------//------		
+		
+
+
+
+
+
+
+
+
+//=================================================================================================================
+																//------------- #13 Vuejs | Forgot Password part-1  -------------//
+//=================================================================================================================
+			--  In this video we will know how to generate a unique tokens and send  forgot password email in users email address
+			
+			-- 1st jene nei password reset ta kivabe kaj kore: --->> password vole gele protome forget password er jonno request korben, 1st e forget component name e amra ekta component make korbo, oi component e ekta email deyar field thakbe, user email diye submit korbe then backend e request jabe sathe sathe, amra check korbo email ta amader database e ache kina kono user er, jodi dekhi j email ta ache or match korche taile amra ekta 50-60-70 character er ekta token generate korbo  & ota database e save korbo & oi user er email e mail kore dibo. then user mail ta pabe & click korar sathe sathe amader site e redirect korabe, arekta component thakbe password_reset component, oi component e eshe amra dekbo/check korbo j shee token niye asche naki token chara asche, shee token niye asle shee access pelo & password reset korar jonno new password set korlo. koar por submit/update password click korlo & abar backend e ekta request gelo. oi request er sathe shee j token ta niye aschilo oi token ta shoho amra patabo tkn check korbe j ei token ta amader database e ache kina, dhori 1st step token ta paowa gelo then 2nd step check korbo token ta valid naki invalid, for example dhori ekjon user k amra 7din aghe ekta token patiyechi, ekn shee 7 din por eshe oi mail er token diye password reset korar try korteche taile tkn amra takhe password reset korte dibo na, amara j token ta patabo oi token tar ekta time limit kore dibo 1hour/2hour etc oi time-limit er por oi token ta ar kaj korbe na, ekn mone kori amader sob condition fullfill hoyeche token niye password reset korar submit diyeche taile amra password reset kore dibo & login/home e pathiye dibo. ei holo password_forget & password_reset er total step/process.
+			
+			
+			//--------------------------------------------- views/auth/password/Forgot.vue ------------------------------------------------------------------------------------------------
+							<template>
+								  <div class="hold-transition login-page">
+									<div class="login-box">
+									  <!-- /.login-logo -->
+									  <div class="card card-outline card-primary">
+										<div class="card-header text-center">
+										  <a href="#" class="h1"><b>Forgot </b> Password</a>
+										</div>
+										<div class="card-body">
+										  <p class="login-box-msg">Submit your email for reseting password</p>
+
+										 <form @submit.prevent="adminForgotPassword">
+										  <div v-if="msg">
+											<div class="alert alert-success alert-dismissible fade show" role="alert">
+											  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+												<span class="sr-only">Close</span>
+											  </button>
+											  <small><strong>{{msg.message}}</strong></small>
+											</div>
+											</div>
+
+											<div class="input-group mb-3">
+											  <input type="email" class="form-control" v-model="form.email"  placeholder="Email" />
+											  <div class="input-group-append">
+												<div class="input-group-text">
+												  <span class="fas fa-envelope"></span>
+												</div>
+											  </div>
+											</div>
+											<span class="text-danger" v-if="errors.email">{{errors.email[0]}}</span>
+
+
+											<div class="row">
+											  <!-- /.col -->
+											  <div class="col-12 mb-2">
+												<button type="submit" class="btn btn-primary btn-block">Send Password Reset Link</button>
+											  </div>
+											  <!-- /.col -->
+											</div>
+										  </form>
+
+										  <p class="mb-1">
+											<router-link to="/">Back to Sign In</router-link>
+										  </p>
+										
+										  <p class="mb-0">
+											<router-link :to="{name: 'Register'}" class="text-center">Register a new membership</router-link>
+										  </p>
+										</div>
+										<!-- /.card-body -->
+									  </div>
+									  <!-- /.card -->
+									</div>
+								  </div>
+								</template>
+
+								<script>
+								export default {
+									name: "Forgot",
+
+									data() {
+									  return {
+										form:{
+										  email:null,
+										},
+										errors:{},
+										msg:'',
+									  }
+									},
+
+									methods: {
+									  adminForgotPassword(){
+										this.$store.dispatch("FORGOT",this.form)
+										.then((res) => {
+										  console.log(res.data)
+										  this.msg = res.data;
+										  this.form.email = null;
+										  //this.$router.push({ name: 'Home'})
+										}).catch((err) => {
+										   console.log(err.response.data.errors)
+										   this.errors = err.response.data.errors
+										});
+									  }
+									},
+								 
+								};
+								</script>
+
+								<style>
+								</style>
+													
+													
+			//--------------------------------------------- src/router/index.js -----------------------------------------------------------------------------------------------------------
+								import { createRouter, createWebHistory } from 'vue-router'
+								import store from '../store';
+								import Login from '../views/auth/Login.vue'
+								import Register from '../views/auth/Register.vue'
+								import Forgot from '../views/auth/password/Forgot.vue'			//--------------------------
+								import Reset from '../views/auth/password/Reset.vue'				//---------------
+								import Home from '../views/pages/Home.vue'
+
+								const routes = [
+								  {
+									path: '/',
+									name: 'Login',
+									component: Login,
+									meta: { guest: true }   //if authenticated/after authenticated, will never access this
+								  },
+
+								  {
+									path: '/register',
+									name: 'Register',
+									component: Register,
+									meta: { guest: true }   //if authenticated/after authenticated, will never access this
+								  },
+
+								  {
+									path: '/forgot/password',								//--------------------------
+									name: 'Forgot',
+									component: Forgot,
+									meta: { guest: true }   //if authenticated/after authenticated, will never access this
+								  },
+
+								  {
+									path: '/reset/password',
+									name: 'Reset',
+									component: Reset,
+									meta: { guest: true }   //if authenticated/after authenticated, will never access this
+								  },
+								  
+								  {
+									path: '/admin/home',
+									name: 'Home',
+									component: Home,
+									meta: { requiresAuth: true }      //for --> only authenticated users can access this.
+								  },
+								  
+								]
+
+								const router = createRouter({
+								  history: createWebHistory(process.env.BASE_URL),
+								  routes
+								})
+
+								// eslint-disable-next-line no-unused-vars
+								router.beforeEach((to, from) => {                             // for route secure
+								  // instead of having to check every route record with
+								  // to.matched.some(record => record.meta.requiresAuth)
+								  if (to.meta.requiresAuth && !store.getters.GET_AUTH_STATUS) {
+									// this route requires auth, check if logged in
+									// if not, redirect to login page.
+									return {
+									  path: '/',
+									  // save the location we were at to come back later
+									  query: { redirect: to.fullPath },
+									}
+								  }
+								  else if (to.meta.guest && store.getters.GET_AUTH_STATUS) {
+									// this route requires auth, check if logged in
+									// if not, redirect to login page.
+									return {
+									  path: '/admin/home',
+									  // save the location we were at to come back later
+									  query: { redirect: to.fullPath },
+									}
+								  }
+								})
+
+								export default router
+
+
+			//--------------------------------------------- store/modules/auth.js -------------------------------------------------------------------------------------------------------
+								import axios from 'axios'
+								axios.defaults.baseURL = 'http://127.0.0.1:8000/api/v1';
+
+								export const auth = {
+									state: { 
+										auth_status:false,
+										auth_token:null,
+										auth_info:{
+											name: null,
+											email: null,
+											phone: null,
+											image: null,
+										}
+									},
+
+									getters:{
+										GET_AUTH_STATUS(state){
+											return state.auth_status;
+										},
+
+										GET_AUTH_TOKEN(state){
+											return state.auth_token;
+										},
+										
+										GET_AUTH_INFO(state){
+											return state.auth_info;
+										},
+									},
+
+									actions: {
+										LOGIN(context,loginData){
+										   return new Promise((resolve,reject)=>{
+											axios.post('/login',loginData)
+											.then((res) => {
+												// console.log(res.data)
+											   context.commit('SET_AUTH_TOKEN',res.data.access_token)
+											   context.commit('SET_AUTH_INFO',res.data.user)
+											   resolve(res)
+											}).catch((err) => {
+												reject(err)
+												// console.log(err.response.data.errors)
+											});
+										   })
+										},
+
+										LOGOUT(context){
+										  // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;  //for passing auth token for logout
+										  axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.auth_token;
+										   return new Promise((resolve,reject)=>{
+											axios.post('/logout')
+											.then((res) => {
+												// console.log(res.data)
+											   context.commit('SET_AUTH_LOGOUT')
+											   resolve(res)
+											}).catch((err) => {
+												reject(err)
+												// console.log(err.response.data.errors)
+											});
+										   })
+										},
+
+										REGISTRATION(context,registrationData){
+										   return new Promise((resolve,reject)=>{
+											  axios.post('/register',registrationData)
+											  .then((res) => {
+												  // console.log(res.data)
+												context.commit('SET_AUTH_TOKEN',res.data.access_token)
+												context.commit('SET_AUTH_INFO',res.data.user)
+												resolve(res)
+											  }).catch((err) => {
+												  reject(err)
+												  // console.log(err.response.data.errors)
+											  });
+										   })
+										},
+
+										FORGOT(context,forgotPasswordMail){								//--------------------------
+										   return new Promise((resolve,reject)=>{
+											  axios.post('/forgot',forgotPasswordMail)
+											  .then((res) => {
+												  // console.log(res.data)
+												  resolve(res)
+											  }).catch((err) => {
+												  reject(err)
+												  // console.log(err.response.data.errors)
+											  });
+										   })
+										},
+									},
+
+									mutations: {
+										SET_AUTH_TOKEN(state,token){
+											state.auth_token = token;
+											state.auth_status = true;
+										},
+
+										SET_AUTH_INFO(state,info){
+											state.auth_info.name = info.name;
+											state.auth_info.email = info.email;
+											state.auth_info.phone = info.phone;
+											state.auth_info.image = info.image;
+										},
+
+										SET_AUTH_LOGOUT(state){
+											state.auth_token = null;
+											state.auth_status = false;
+
+											state.auth_info = {
+											  name: null,
+											  email: null,
+											  phone: null,
+											  image: null,
+											}
+										}
+									},
+									
+								}
+			
+			
+			//--------------------------------------------- laravel/route/api.php ------------------------------------------------------------------------------------------------------------
+						<?php
+
+							use Illuminate\Http\Request;
+							use Illuminate\Support\Facades\Route;
+							use App\Http\Controllers\Api\Auth\AuthController;
+							use App\Http\Controllers\Api\Auth\ForgotPasswordController;
+
+							Route::middleware('auth:api')->get('/user', function (Request $request) {
+								return $request->user();
+							});
+							
+							Route::prefix('v1')->group(function(){
+								Route::post('/login',[AuthController::class,'login']);
+								Route::post('/register',[AuthController::class,'register']);
+								Route::post('/forgot',[ForgotPasswordController::class,'forgotPassword']);			//----------------------------
+
+								Route::get('/login',function(){   //middleware('auth:api') mane authenticated route na pele ei route e eshe auto hit krbe
+									return response()->json([
+										'message' => 'Unauthenticated',
+									],401);
+								})->name('login');
+
+								Route::middleware('auth:api')->group(function(){             //ekhane ei route gula access korte Login thaka lagbe.
+									Route::post('/logout',[AuthController::class,'logout']);
+								});
+							});
+
+			
+			//--------------------------------------------- laravel/controllers/api/Auth/ForgotPasswordController ----------------------------------------------------------------
+							<?php
+
+								namespace App\Http\Controllers\Api\Auth;
+
+								use App\Http\Controllers\Controller;
+								use Illuminate\Http\Request;
+								use Illuminate\Support\Facades\Validator;
+								use Illuminate\Support\Facades\DB;
+								use Illuminate\Support\Str;
+								use Mail;
+
+								class ForgotPasswordController extends Controller
+								{
+									public function forgotPassword(Request $request){
+										$validate = Validator::make($request->all(),[
+											'email' => 'required|email|exists:users',
+									   ]);
+
+									   if ($validate->fails()) {
+										   return response()->json([
+											   'errors' => $validate->errors()
+										   ],422);
+									   }
+
+									   $email = $request->email;
+									   $token = Str::random(65);
+
+									   DB::table('password_resets')->insert([
+										   'email' => $email,
+										   'token' => $token,
+										   'created_at' => now()->addHours(1)       //token will valid for 1hour
+									   ]);
+
+									   //------ Mail Send -------
+									   Mail::send('mail.password_reset',['token' => $token], function($msg) use ($email){
+										   $msg->to($email);
+										   $msg->subject('Password Reset Email | Laravel-VueCli-Passport');
+									   });
+
+									   return response()->json([
+											'message' => 'Password Reset Mail Send Successfully, Please Check Your Email'
+									   ]);
+
+									}
+
+								}
+
+			
+			//--------------------------------------------- laravel/migration/password_resets table ----------------------------------------------------------------------------------
+								public function up()
+								{
+									Schema::create('password_resets', function (Blueprint $table) {
+										$table->string('email')->index();
+										$table->string('token');
+										$table->timestamp('created_at')->nullable();
+									});
+								}
+			
+			
+			//--------------------------------------------- laravel/config/app.php ----------------------------------------------------------------------------------------------------------
+									// 'timezone' => 'UTC',
+									'timezone' => 'Asia/Dhaka',
+			
+			//--------------------------------------------- laravel/resources/views/mail/password_reset.blade.php ---------------------------------------------------------------
+							<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+								<html xmlns="http://www.w3.org/1999/xhtml">
+								<head>
+									<meta name="viewport" content="width=device-width, initial-scale=1.0">
+									<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+								</head>
+								<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; background-color: #f8fafc; color: #74787e; height: 100%; hyphens: auto; line-height: 1.4; margin: 0; -moz-hyphens: auto; -ms-word-break: break-all; width: 100% !important; -webkit-hyphens: auto; -webkit-text-size-adjust: none; word-break: break-word;">
+									<style>
+										@media  only screen and (max-width: 600px) {
+											.inner-body {
+												width: 100% !important;
+											}
+
+											.footer {
+												width: 100% !important;
+											}
+										}
+
+										@media  only screen and (max-width: 500px) {
+											.button {
+												width: 100% !important;
+											}
+										}
+									</style>
+
+									<table class="wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; background-color: #f8fafc; margin: 0; padding: 0; width: 100%; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 100%;">
+										<tr>
+											<td align="center" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box;">
+												<table class="content" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; margin: 0; padding: 0; width: 100%; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 100%;">
+													<tr>
+									<td class="header" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; padding: 25px 0; text-align: center;">
+										<a href="http://localhost/ecommerce" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #bbbfc3; font-size: 19px; font-weight: bold; text-decoration: none; text-shadow: 0 1px 0 white;">
+											Laravel
+										</a>
+									</td>
+								</tr>
+
+													<!-- Email Body -->
+													<tr>
+														<td class="body" width="100%" cellpadding="0" cellspacing="0" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; background-color: #ffffff; border-bottom: 1px solid #edeff2; border-top: 1px solid #edeff2; margin: 0; padding: 0; width: 100%; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 100%;">
+															<table class="inner-body" align="center" width="570" cellpadding="0" cellspacing="0" role="presentation" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; background-color: #ffffff; margin: 0 auto; padding: 0; width: 570px; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 570px;">
+																<!-- Body content -->
+																<tr>
+																	<td class="content-cell" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; padding: 35px;">
+																		<h1 style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #3d4852; font-size: 19px; font-weight: bold; margin-top: 0; text-align: left;">Hello!</h1>
+								<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #3d4852; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">You are receiving this email because we received a password reset request for your account.</p>
+								<table class="action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; margin: 30px auto; padding: 0; text-align: center; width: 100%; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 100%;">
+									<tr>
+										<td align="center" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box;">
+											<table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box;">
+												<tr>
+													<td align="center" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box;">
+														<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box;">
+															<tr>
+																<td style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box;">
+																	<a href="http://localhost:8080/reset-password?token={{ $token }}" class="button button-primary" target="_blank" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; border-radius: 3px; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16); color: #fff; display: inline-block; text-decoration: none; -webkit-text-size-adjust: none; background-color: #3490dc; border-top: 10px solid #3490dc; border-right: 18px solid #3490dc; border-bottom: 10px solid #3490dc; border-left: 18px solid #3490dc;">Reset Password</a>
+																</td>
+															</tr>
+														</table>
+													</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+								<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #3d4852; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">This password reset link will expire in 60 minutes.</p>
+								<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #3d4852; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">If you did not request a password reset, no further action is required.</p>
+								<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #3d4852; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">Regards,<br>Laravel-VueCli-Passport</p>
+
+																		<table class="subcopy" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; border-top: 1px solid #edeff2; margin-top: 25px; padding-top: 25px;">
+									<tr>
+										<td style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box;">
+											<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #3d4852; line-height: 1.5em; margin-top: 0; text-align: left; font-size: 12px;">If you’re having trouble clicking the "Reset Password" button, copy and paste the URL below
+								into your web browser: <a href="http://localhost:8080/reset-password?token={{ $token }}" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #3869d4;">http://localhost:8080/reset-password?token={{ $token }}</a></p>
+										</td>
+									</tr>
+								</table>
+																	</td>
+																</tr>
+															</table>
+														</td>
+													</tr>
+
+													<tr>
+									<td style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box;">
+										<table class="footer" align="center" width="570" cellpadding="0" cellspacing="0" role="presentation" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; margin: 0 auto; padding: 0; text-align: center; width: 570px; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 570px;">
+											<tr>
+												<td class="content-cell" align="center" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; padding: 35px;">
+													<p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; line-height: 1.5em; margin-top: 0; color: #aeaeae; font-size: 12px; text-align: center;">© 2021 Laravel. All rights reserved.</p>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+												</table>
+											</td>
+										</tr>
+									</table>
+								</body>
+								</html>
+
+			
+			//--------------------------------------------- laravel/.env -------------------------------------------------------------------------------------------------------------------------
+								MAIL_MAILER=smtp
+								MAIL_HOST=smtp.mailtrap.io
+								MAIL_PORT=2525
+								MAIL_USERNAME=f2c71eb3a86fc1
+								MAIL_PASSWORD=112fc8d5e851ee
+								MAIL_ENCRYPTION=tls
+								MAIL_FROM_ADDRESS=w3coders@gmail.com
+								MAIL_FROM_NAME="${APP_NAME}"
+		
+		
+//------------------//---------------------//---------------------//------------------------//-------------------------//-------------------------//------------------------//--------------------
+//------------------//---------------------//---------------------//------------------------//-------------------------//-------------------------//------------------------//--------------------
+//------------------//---------------------//---------------------//------------------------//-------------------------//-------------------------//------------------------//--------------------
+//------------------//---------------------//---------------------//------------------------//-------------------------//-------------------------//------------------------//--------------------
+//------------------//---------------------//---------------------//------------------------//-------------------------//-------------------------//------------------------//--------------------
+//------------------//---------------------//---------------------//------------------------//-------------------------//-------------------------//------------------------//--------------------
+//------------------//---------------------//---------------------//------------------------//-------------------------//-------------------------//------------------------//--------------------
+//------------------//---------------------//---------------------//------------------------//-------------------------//-------------------------//------------------------//--------------------
+//------------------//---------------------//---------------------//------------------------//-------------------------//-------------------------//------------------------//--------------------
+
+
+
+
+
+//=======================================================================================================================
+																//-------------------- The End --------------------
+//=======================================================================================================================
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
