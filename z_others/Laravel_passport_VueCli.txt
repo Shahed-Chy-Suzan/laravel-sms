@@ -141,6 +141,21 @@
 											//----------------------- Authentication (Laravel Passport) -----------------//
 											//------------ #1 Laravel Passport & Vue3 Project installation -----------------//
 //=======================================================================================================================
+
+//---------------Laravel Passport---------------
+		--"passport" laravel er ekta official package,jeta Authentication er jonno use kora hoy,..eti amader k ekta token dei,jei token k access kore amra user k chinhito korte pari,jar maddome user er credintial ache kina check kori, & check kori j user k login korte debo ki debo na,... jeta amader k "token" generate kore dei login system er jonno,amra jokon laravel e 'api' develop kori/rest api develop kori,tkn amra j login use kori,tkn login access korar somoy ekta token er proyojon hoy/generate korte hoy, ei token generate kore dei passport...// OR Jwt token use kora hoy passport er bikolpo hishebe,
+		
+		--Laravel er documentatiom e kob valo vabe deya ache use korar rules.
+		--1st e passport project ta install korte hobe: 
+			CMD_command: $ composer require laravel/passport
+						 $ php artisan migrate
+						 $ php artisan passport:install
+		--erpor migrate er karone laravel amader k new vabe 5ta table diye dibe,:: (auth_codes,access_tokens,refress_token,clients_table,personal_access_client_table) name e
+		&& passport::install command er korane (client id 1 & ota secret id //&& client_id 2 & otar secret id default vabe diye dibe,) jegula amra database er table "oauth_clients" e gele dekte pabo.
+		--thek app/user.php te giye opore "use Laravel\Passport\HasApiTokens;" add kore dithe hobe, && class er vitore "use HasApiTokens,Notifiable;" add korte../thekn "provider/AuthServiceProvider" e giye niche boot() function e Passport::routes(); add korte hobe,//okhane 'rotected $policies er modde j "'App\Model' => 'App\Policies\ModelPolicy'," ache ota comment ta badd kore dithe hobe,..& ekn ekdom opore "use Laravel\Passport\Passport;" add kore dithe hobe,..//config/auth.php er vitor giye "api" er " 'driver' => 'passport' " kore dithe hobe,..........//baki aro ache ta sob documentation e sob bola ache,
+//===============================================================================================================================
+
+
 //------------------------------------------------- Authentication ----------------------------------------------------------------------------------
 			-- ekhane amra authentication er jonno Laravel-Passport use korbo, Link: ( https://laravel.com/docs/8.x/passport ) ,
 	
@@ -148,8 +163,6 @@
 						//--1-- command: composer require laravel/passport
 						//--2-- command: php artisan migrate		//migrate korar aghe amra amader 'User' table ta edit korbo, 2ta field extra add korbo.
 						//--3-- command: php artisan passport:install
-						
-			//-- 
 			
 			
 			//---------------------------------------------- database/migratios/user_table --------------------------------------------------------------------------------------
